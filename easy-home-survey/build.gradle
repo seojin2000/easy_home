@@ -30,8 +30,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // 스프링시큐리티
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.security:spring-security-crypto'
+   /* implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-crypto'*/
 
     // JWT 처리, 버전은 참고
     /*implementation 'io.jsonwebtoken:jjwt-api:0.11.2'

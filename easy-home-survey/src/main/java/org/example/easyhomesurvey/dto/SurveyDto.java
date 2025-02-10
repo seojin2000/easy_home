@@ -1,6 +1,5 @@
 package org.example.easyhomesurvey.dto;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -15,13 +14,4 @@ public class SurveyDto {
     private String title;
     private String description;
     private LocalDateTime endDate;
-
-    // 여기에서도 managePk 삭제
-    @Builder
-    public SurveyDto(Integer managerPk, String title, String description, LocalDateTime endDate) {
-        this.managerPk = managerPk;
-        this.title = title;
-        this.description = description;
-        this.endDate = endDate;
-    }
 }
