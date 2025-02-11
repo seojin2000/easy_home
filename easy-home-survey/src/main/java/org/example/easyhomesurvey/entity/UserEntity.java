@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="userentity")
+@Table(name="userentity") // user라고 하면 h2에 인식이 안돼서 userentity로 설정
 @Data
 @NoArgsConstructor
 public class UserEntity {

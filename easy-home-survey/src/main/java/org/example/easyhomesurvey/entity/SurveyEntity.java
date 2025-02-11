@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="survey")
@@ -24,4 +25,8 @@ public class SurveyEntity {
     private String title;
     private String description;
     private LocalDateTime endDate;
+
+    // 질문
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
+    private List<SurveyQuestion> questions;
 }

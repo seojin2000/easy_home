@@ -20,5 +20,4 @@ public class SurveyQuestion {
     private SurveyEntity survey;
 
     private String question;
-    private String answer;
 }
