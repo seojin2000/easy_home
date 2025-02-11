@@ -7,6 +7,8 @@ import lombok.ToString;
 @Data
 @ToString
 @NoArgsConstructor
-public class QuestionDto {
-    public String question;
+public class AnswerDto {
+    private Integer userPk;
+    private Integer questionPk;
+    private String answer;
 }

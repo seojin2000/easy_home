@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class SurveyQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer surveyQuestionPk;
+    private Integer questionPk;
 
     // 인증 기능 추가 시 외래키 삭제
     // private Integer surveyPk;
