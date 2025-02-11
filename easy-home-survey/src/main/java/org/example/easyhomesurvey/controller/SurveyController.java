@@ -4,10 +4,7 @@ import org.example.easyhomesurvey.dto.SurveyDto;
 import org.example.easyhomesurvey.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/survey")
@@ -22,7 +19,6 @@ public class SurveyController {
         return ResponseEntity.ok("설문조사 생성 완료");
     }
 
-    // 실문 질문 증록
 
     // 설문 참여
     // 설문 결과 조회
