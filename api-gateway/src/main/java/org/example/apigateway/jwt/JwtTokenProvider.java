@@ -1,5 +1,6 @@
 package org.example.apigateway.jwt;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -19,8 +20,8 @@ import java.util.Date;
 public class JwtTokenProvider {
     // 맴버 변수 형태 구성
     // 토큰 생성시 필요한 비밀키 -> 재료값 (외부 노출 x) -> @Value("...")
-    @Value("${jwt.token.raw_secret_key}")
-    private String rawSecretKey;
+//    @Value("${jwt.token.raw_secret_key}")
+    private String rawSecretKey = Dotenv.load().get("JWT_SECRET_KEY");
 
     // 키에 대한 만료시간 (필요시 사전에 정의해서 진행 가능) -> 변수로 사용
     @Value("${jwt.expiration}")

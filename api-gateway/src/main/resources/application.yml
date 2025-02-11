@@ -3,7 +3,7 @@ spring:
     name: api-gateway
 
   # 서비스 등록 방법 : 코드에서 직접 서비스 등록 구성
-  # 성능 향상 옵션 -> spring cloud에서 버전 호황성 검사 비활성 처리 -> 성능 향상
+  # 성능 향상 옵션 -> spring cloud에서 버전 호환성 검사 비활성 처리 -> 성능 향상
   cloud:
     compatibility-verifier:
       enabled: false # 기본값 일치
@@ -38,6 +38,7 @@ eureka:
   instance:
     lease-renewal-interval-in-seconds: 15 # 기본 30초 -> 15초 주기 조정 : 헬시체크
     lease-expiration-duration-in-seconds: 20 # 기본 90초 -> 20초 정도 대기
+
 
 # JWT (커스텀 환경변수)
 jwt:
