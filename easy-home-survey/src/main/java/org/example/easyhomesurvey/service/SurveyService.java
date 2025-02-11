@@ -1,14 +1,13 @@
 package org.example.easyhomesurvey.service;
 
 import org.example.easyhomesurvey.Repository.*;
-import org.example.easyhomesurvey.dto.AnswerDto;
-import org.example.easyhomesurvey.dto.QuestionDto;
-import org.example.easyhomesurvey.dto.SurveyDto;
+import org.example.easyhomesurvey.dto.*;
 import org.example.easyhomesurvey.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SurveyService {
@@ -65,14 +64,15 @@ public class SurveyService {
     // 설문 참여 - 입주민
     public void joinSurvey(List<AnswerDto> answerDtos) {
         for (AnswerDto answerDto : answerDtos) {
-            // 회원번호가 없거나 존재하지 않으면 안됨(인증 후 수정)
+            // 회원번호가 조회
             if (answerDto.getUserPk() == null) {
                 throw new IllegalArgumentException("userPk is null");
             }
             UserEntity user = userRepository.findById(answerDto.getUserPk())
                     .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
 
-            // questionPk가 없거나 존재하지 않으면 안됨
+            // questionPk 조회
+            // 추가 - question 중복 여부 확인
             if (answerDto.getQuestionPk() == null) {
                 throw new IllegalArgumentException("questionPk is null");
             }
@@ -94,4 +94,34 @@ public class SurveyService {
     }
 
     // 설문 결과 조회
+    public SurveyResultDto getSurveyResults(Integer surveyPk) {
+        // 설문조사 조회
+        SurveyEntity survey = surveyRepository.findById(surveyPk)
+                .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+
+        // 해당 설문조사의 질문 리스트 조회
+        List<QuestionResultDto> questionResults = surveyQuestionRepository.findBySurvey(survey).stream()
+                .map(question -> {
+                    // 각 질문에 해당하는 답변 리스트 조회
+                    List<String> answers = surveyAnswerRepository.findByQuestion(question).stream()
+                            .map(SurveyAnswer::getAnswer)
+                            .collect(Collectors.toList());
+
+                    // QuestionResultDto 생성
+                    QuestionResultDto questionResultDto = new QuestionResultDto();
+                    questionResultDto.setQuestion(question.getQuestion());
+                    questionResultDto.setAnswers(answers);
+                    return questionResultDto;
+                })
+                .collect(Collectors.toList());
+
+        // SurveyResultDto 생성
+        SurveyResultDto surveyResultDto = new SurveyResultDto();
+        surveyResultDto.setTitle(survey.getTitle());
+        surveyResultDto.setDescription(survey.getDescription());
+        surveyResultDto.setQuestions(questionResults);
+
+        return surveyResultDto;
+    }
 }
+
