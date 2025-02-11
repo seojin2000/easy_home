@@ -40,10 +40,10 @@ eureka:
     lease-expiration-duration-in-seconds: 20 # 기본 90초 -> 20초 정도 대기
 
 # JWT (커스텀 환경변수)
-#jwt:
-#  token:
-#    raw_secret_key: # raw_secret_key 입력하기
-#  # 만료시간을 임의로 짧게 부여 -> 조정가능
-#  expiration: 10
+jwt:
+  token:
+    raw_secret_key: ${JWT_SECRET_KEY}
+  # 만료시간을 임의로 짧게 부여 -> 조정가능
+  expiration: 10
 
 # RDB는 서비스별로 따로 관리

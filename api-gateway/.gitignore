@@ -1,3 +1,6 @@
+### env 추가 ###
+.env
+
 HELP.md
 .gradle
 build/
