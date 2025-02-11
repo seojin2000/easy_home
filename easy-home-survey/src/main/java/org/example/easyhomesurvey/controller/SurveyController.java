@@ -2,6 +2,7 @@ package org.example.easyhomesurvey.controller;
 
 import org.example.easyhomesurvey.dto.AnswerDto;
 import org.example.easyhomesurvey.dto.SurveyDto;
+import org.example.easyhomesurvey.dto.SurveyResultDto;
 import org.example.easyhomesurvey.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,4 +31,8 @@ public class SurveyController {
     }
 
     // 설문 결과 조회
+    @GetMapping("/{surveyPk}")
+    public SurveyResultDto getSurveyResults(@PathVariable Integer surveyPk) {
+        return surveyService.getSurveyResults(surveyPk);
+    }
 }
