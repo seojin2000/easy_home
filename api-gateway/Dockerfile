@@ -13,6 +13,9 @@ WORKDIR /app
 
 COPY --from=builder /app/build/libs/*SNAPSHOT.jar ./app.jar
 
+# 환경 변수 설정
+ENV SECRET_KEY=${SECRET_KEY}
+
 EXPOSE 8080
 
 CMD [ "java","-jar","app.jar" ]
