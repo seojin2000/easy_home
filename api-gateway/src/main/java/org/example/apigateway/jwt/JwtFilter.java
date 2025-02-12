@@ -61,14 +61,14 @@ public class JwtFilter implements WebFilter, ApplicationContextAware {
         // 1. 요청 URL 확인 로그 출력
         // 요청 URL 획득
         String reqUrl = exchange.getRequest().getURI().getPath();
-        System.out.println("요청 URL {}" + reqUrl );
+        System.out.println("요청 URL {" + reqUrl  + "}" );
 
         // 2. 스프링시큐리에서 인증 없이 통과 가능한 URL 들은 바로 통과 (체크 필요)->종료(요청을 넘김)
         //    인증없이 통과될 URL과 일치하는 URL 존재하는지 체킹
         AntPathMatcher matcher = new AntPathMatcher(); // 해당 객체를 통해서 순환(반복문) 점검 (도구)
         for(String path : FREE_PATHS) {
             if (matcher.match(path, reqUrl)) { // 매칭되면, 이하 과정 생략 -> 요청을 개별 서비스로 전달
-                System.out.println("인증없이 통과 처리 {}" + reqUrl );
+                System.out.println("인증없이 통과 처리 {" + reqUrl + "}");
                 return chain.filter(exchange);
             }
         }
