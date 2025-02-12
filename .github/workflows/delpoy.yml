@@ -50,15 +50,5 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: eureka-server-0.0.1-SNAPSHOT.jar
+          source: eureka-server-0.0.1-SNAPSHOT.jar, api-gateway-0.0.1-SNAPSHOT.jar
           target: /home/ubuntu/demo/home
-
-      - name: EC2에 연결하여 업로드 (GATEWAY)
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: api-gateway-0.0.1-SNAPSHOT.jar
-          target: /home/ubuntu/demo/home
-
