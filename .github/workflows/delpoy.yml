@@ -77,9 +77,19 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script_stop: true
           script: |
+            # 환경 변수 설정
+            export JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"
+
             # 기존 프로세스 종료
-            sudo fuser -k -n tcp 8080 || true  # API Gateway 포트 종료
-            sudo fuser -k -n tcp 8761 || true  # Eureka Server 포트 종료
+            sudo fuser -k -n tcp 8080 || true 
+            sudo fuser -k -n tcp 8761 || true  
+            
+            # Eureka Server 서버 실행
+            rm -rf /home/ubuntu/easyhome/eureka-server
+            mkdir -p /home/ubuntu/easyhome/eureka-server
+            mv /home/ubuntu/easyhome/run-eureka-server.jar /home/ubuntu/easyhome/eureka-server/run-eureka-server.jar
+            cd /home/ubuntu/easyhome/eureka-server
+            nohup java -jar run-eureka-server.jar > ./output-eureka-server.log 2>&1 &
 
             # API Gateway 서버 실행
             rm -rf /home/ubuntu/easyhome/api-gateway
@@ -87,13 +97,6 @@ jobs:
             mv /home/ubuntu/easyhome/run-api-gateway.jar /home/ubuntu/easyhome/api-gateway/run-api-gateway.jar
             cd /home/ubuntu/easyhome/api-gateway
             nohup java -jar run-api-gateway.jar > ./output-api-gateway.log 2>&1 &
-
-            # Eureka Server 서버 실행
-            rm -rf /home/ubuntu/easyhome/eureka-server
-            mkdir -p /home/ubuntu/easyhome/eureka-server
-            mv /home/ubuntu/easyhome/run-eureka-server.jar /home/ubuntu/easyhome/eureka-server/run-eureka-server.jar
-            cd /home/ubuntu/easyhome/eureka-server
-            nohup java -jar run-eureka-server.jar > ./output-eureka-server.log 2>&1 &
 
             # 정리 작업
             rm -rf /home/ubuntu/easyhome/run-api-gateway.jar
