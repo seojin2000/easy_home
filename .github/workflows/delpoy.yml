@@ -48,14 +48,33 @@ jobs:
       - name: Eureka Server 도커 실행
         working-directory: ./eureka-server
         run: |
-          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t eureka-server .
-          docker run -d --name eureka-server -p 8761:8761 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} eureka-server
+          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t eureka-server .  # Docker 이미지 빌드
+          docker run -d --name eureka-server -p 8761:8761 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} eureka-server  # Docker 컨테이너 실행
           docker ps -a  
 
       # 6. Docker 이미지 빌드 및 실행 (API Gateway)
       - name: API Gateway 도커 실행
         working-directory: ./api-gateway
         run: |
-          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t api-gateway .
-          docker run -d --name api-gateway -p 8080:8080 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} api-gateway
+          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t api-gateway .  # Docker 이미지 빌드
+          docker run -d --name api-gateway -p 8080:8080 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} api-gateway  # Docker 컨테이너 실행
           docker ps -a
+
+      # 7. Docker Hub 로그인 (Docker Hub 사용자명 및 비밀번호를 GitHub Secrets에 저장)
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # GitHub Secrets에 저장된 Docker Hub 사용자명
+          password: ${{ secrets.DOCKER_PASSWORD }}  # GitHub Secrets에 저장된 Docker Hub 비밀번호
+
+      # 8. Docker 이미지를 Docker Hub에 푸시 (유레카 서버)
+      - name: Docker 이미지 푸시 (Eureka Server)
+        run: |
+          docker tag eureka-server ${{ secrets.DOCKER_USERNAME }}/eureka-server:latest  
+          docker push ${{ secrets.DOCKER_USERNAME }}/eureka-server:latest 
+
+      # 9. Docker 이미지를 Docker Hub에 푸시 (API Gateway)
+      - name: Docker 이미지 푸시 (API Gateway)
+        run: |
+          docker tag api-gateway ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest  
+          docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest  
