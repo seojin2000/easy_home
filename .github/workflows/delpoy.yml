@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat-docker
+      - feat-ec2
 jobs:
   deploy:
     runs-on: ubuntu-latest
