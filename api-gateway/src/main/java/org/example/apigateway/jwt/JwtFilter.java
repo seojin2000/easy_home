@@ -115,7 +115,7 @@ public class JwtFilter implements WebFilter, ApplicationContextAware {
                 // 3. 리플레시 토큰의 유효성 검사, 존재여부 검사
                 // 4. (엑세스) 토큰 발급
                 // 5. 응답 헤더에 엑세스 토큰 세팅 -> 응답을 받은후 쿠키쪽에서 갱신 처리 됨
-                // 6. 위에서 진행했던 절차 반복 : 요청 헤더데 표식, 인증정보 시큐리티컨텍스트에 설정
+                // 6. 위에서 진행했던 절차 반복 : 요청 헤더데 표식, 인증정보 시큐리티 컨텍스트에 설정
             } catch (Exception e) {
                 // 조작된 토큰, 토큰의 누락(부분손실)로 전달 => 노이즈발생
                 throw new RuntimeException(e);

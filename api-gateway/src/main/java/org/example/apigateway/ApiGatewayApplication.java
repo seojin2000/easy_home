@@ -1,6 +1,7 @@
 package org.example.apigateway;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -11,11 +12,14 @@ import org.springframework.context.annotation.Bean;
 @EnableDiscoveryClient // 이 서비스는 유레카 클라이언트이다 <- eureka-server가 찾아서 등록하는 대상 서비스
 @SpringBootApplication
 public class ApiGatewayApplication {
+//	@Value("${JWT_SECRET_KEY}") // 환경 변수에서 SECRET_KEY 값을 읽음
+//	private String secretKey;
 
 	public static void main(String[] args) {
 
 		Dotenv dotenv = Dotenv.load();
 		String dbHost = dotenv.get("JWT_SECRET_KEY");
+		System.out.println(dbHost);
 		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
 	/**
@@ -35,10 +39,10 @@ public class ApiGatewayApplication {
 				//           주문관리, 결제관리
 
 				// 회원관리 -> url 프리픽스 2개 사용
-//                .route("msa-sb-user",
-//                        r->r.path("/auth/**").uri("lb://msa-sb-user")  )
-//                .route("msa-sb-user",
-//                        r->r.path("/user/**").uri("lb://msa-sb-user")  )
+                .route("msa-sb-user",
+                        r->r.path("/auth/**").uri("lb://msa-sb-user")  )
+                .route("msa-sb-user",
+                        r->r.path("/user/**").uri("lb://msa-sb-user")  )
 				.build();
 	}
 
