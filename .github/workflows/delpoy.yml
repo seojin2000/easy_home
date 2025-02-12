@@ -1,18 +1,18 @@
-name: easy home
+name: Deploy for ci/cd
 
 on:
   push:
     branches:
       - main
       - feat-ec2
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
 
+jobs:
+  cicd-deploy:
+    runs-on: ubuntu-latest
     steps:
       # 1. 코드 체크아웃
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # 2. JDK 17 설치
       - name: Install JDK 17
@@ -21,63 +21,81 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 3. 빌드 (API Gateway)
+      # 3. API Gateway 빌드
       - name: Build API Gateway
         working-directory: ./api-gateway
         run: |
-          chmod +x ./gradlew  # gradlew 실행 권한 부여
-          ./gradlew clean build -x test
+          chmod +x ./gradlew
+          ./gradlew clean build
           ls build/libs  # 빌드된 .jar 파일 확인
 
-      # 4. 빌드 (Eureka Server)
+      # 4. Eureka Server 빌드
       - name: Build Eureka Server
         working-directory: ./eureka-server
         run: |
-          chmod +x ./gradlew  # gradlew 실행 권한 부여
-          ./gradlew clean build -x test
+          chmod +x ./gradlew
+          ./gradlew clean build
           ls build/libs  # 빌드된 .jar 파일 확인
 
-      # 5. SSH를 통해 EC2에 연결하여 업로드
-      - name:  EC2에 연결하여 업로드
-        uses: appleboy/ssh-action@v0.1.7
+      # 5. 빌드된 .jar 파일 이름 변경
+      - name: Rename API Gateway build result
+        run: |
+          mv ./api-gateway/build/libs/*SNAPSHOT.jar ./api-gateway/run-api-gateway.jar
+          ls ./api-gateway/build/libs  # 변경된 파일 확인
+
+      - name: Rename Eureka Server build result
+        run: |
+          mv ./eureka-server/build/libs/*SNAPSHOT.jar ./eureka-server/run-eureka-server.jar
+          ls ./eureka-server/build/libs  # 변경된 파일 확인
+
+      # 6. EC2로 API Gateway .jar 파일 업로드
+      - name: Upload API Gateway jar to EC2
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: api-gateway-0.0.1-SNAPSHOT.jar, eureka-server-0.0.1-SNAPSHOT.jar
-          target: /home/ubuntu/easy_home
+          source: ./api-gateway/run-api-gateway.jar
+          target: /home/ubuntu/easyhome
 
-      - name: 서버 접속 후 실행
+      # 7. EC2로 Eureka Server .jar 파일 업로드
+      - name: Upload Eureka Server jar to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: ./eureka-server/run-eureka-server.jar
+          target: /home/ubuntu/easyhome
+
+      # 8. EC2 접속 후 API Gateway 및 Eureka Server 가동
+      - name: SSH to EC2 and start servers
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
+          script_stop: true
           script: |
-            echo "Starting deployment..." > deployment.log
-            
             # 기존 프로세스 종료
-            echo "Stopping any existing processes..." >> deployment.log
-            pkill -f 'java -jar' || true
-            echo "Processes stopped." >> deployment.log
-            
-            # 디렉토리 변경
-            echo "Changing directory to /home/ubuntu/easy_home" >> deployment.log
-            cd /home/ubuntu/easy_home || { echo "Failed to cd into /home/ubuntu/easy_home"; exit 1; }
-            
-            # API Gateway 실행
-            echo "Starting API Gateway..." >> deployment.log
-            nohup java -jar -DJWT_SECRET_KEY=$JWT_SECRET_KEY api-gateway-0.0.1-SNAPSHOT.jar > ./api-gateway.log 2>&1 &
-            echo "API Gateway started." >> deployment.log
-            
-            # Eureka Server 실행
-            echo "Starting Eureka Server..." >> deployment.log
-            nohup java -jar -DJWT_SECRET_KEY=$JWT_SECRET_KEY eureka-server-0.0.1-SNAPSHOT.jar > ./eureka-server.log 2>&1 &
-            echo "Eureka Server started." >> deployment.log
-            
-            # 상태 확인
-            echo "Checking running processes..." >> deployment.log
-            ps aux | grep 'java -jar' >> deployment.log
-            
-            echo "Deployment Complete" >> deployment.log
-            cat deployment.log
+            sudo fuser -k -n tcp 8080 || true  # API Gateway 포트 종료
+            sudo fuser -k -n tcp 8761 || true  # Eureka Server 포트 종료
+
+            # API Gateway 서버 실행 (JWT_SECRET_KEY 전달)
+            rm -rf /home/ubuntu/easyhome/api-gateway
+            mkdir -p /home/ubuntu/easyhome/api-gateway
+            mv /home/ubuntu/easyhome/run-api-gateway.jar /home/ubuntu/easyhome/api-gateway/run-api-gateway.jar
+            cd /home/ubuntu/easyhome/api-gateway
+            export JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"  # JWT_SECRET_KEY 환경 변수로 설정
+            nohup java -jar run-api-gateway.jar > ./output-api-gateway.log 2>&1 &
+
+            # Eureka Server 서버 실행
+            rm -rf /home/ubuntu/easyhome/eureka-server
+            mkdir -p /home/ubuntu/easyhome/eureka-server
+            mv /home/ubuntu/easyhome/run-eureka-server.jar /home/ubuntu/easyhome/eureka-server/run-eureka-server.jar
+            cd /home/ubuntu/easyhome/eureka-server
+            nohup java -jar run-eureka-server.jar > ./output-eureka-server.log 2>&1 &
+
+            # 정리 작업
+            rm -rf /home/ubuntu/easyhome/run-api-gateway.jar
+            rm -rf /home/ubuntu/easyhome/run-eureka-server.jar
