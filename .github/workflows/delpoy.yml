@@ -51,7 +51,7 @@ jobs:
           script: |
             # EC2에서 코드 클론 및 디렉토리 설정
             rm -rf ~/easy_home
-            cd git clone --single-branch --branch feat-ec2 https://github.com/RookiesTeam6/easy_home.git
+            git clone --single-branch --branch feat-ec2 https://github.com/RookiesTeam6/easy_home.git
             cd ~/easy_home
             java -version
             
