@@ -1,8 +1,6 @@
 package org.example.easyhomesurvey.controller;
 
-import org.example.easyhomesurvey.dto.AnswerDto;
-import org.example.easyhomesurvey.dto.SurveyDto;
-import org.example.easyhomesurvey.dto.SurveyResultDto;
+import org.example.easyhomesurvey.dto.*;
 import org.example.easyhomesurvey.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,7 @@ public class SurveyController {
     private SurveyService surveyService;
 
     // 설문 등록 - 관리자
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<String> createSurvey(@RequestBody SurveyDto surveyDto) {
         surveyService.createSurvey(surveyDto);
         return ResponseEntity.ok("설문조사 생성 완료");
@@ -37,6 +35,13 @@ public class SurveyController {
     }
 
     // 설문 수정
+    @PutMapping("/{surveyPk}")
+    public ResponseEntity<SurveyUpdateResDto> updateSurvey(
+            @PathVariable Integer surveyPk,
+            @RequestBody SurveyUpdateReqDto requestDto) {
+        SurveyUpdateResDto updatedSurvey = surveyService.updateSurvey(surveyPk, requestDto);
+        return ResponseEntity.ok(updatedSurvey);
+    }
 
     // 질문 추가
 
