@@ -5,77 +5,61 @@ on:
     branches:
       - main
       - feat-docker
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-
-      # 7. Docker Hub 로그인 (Docker Hub 사용자명 및 비밀번호를 GitHub Secrets에 저장)
-      - name: Docker Hub 로그인
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # GitHub Secrets에 저장된 Docker Hub 사용자명
-          password: ${{ secrets.DOCKER_PASSWORD }}  # GitHub Secrets에 저장된 Docker Hub 비밀번호
-
       # 1. 코드 체크아웃
       - name: Checkout code
         uses: actions/checkout@v2
 
       # 2. JDK 17 설치
-      - name: JDK 17 버전 설치
+      - name: Install JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 3. 유레카 서버 권한 설정 및 빌드
-      - name: 유레카 서버 권한
-        working-directory: ./eureka-server
-        run: chmod +x ./gradlew
-
-      - name: 유레카 서버 빌드 / 클린
-        working-directory: ./eureka-server
-        run: |
-          ./gradlew clean bootJar -x test
-          ls build/libs  # 빌드된 .jar 파일 확인
-
-      # 4. API Gateway 권한 설정 및 빌드
-      - name: API-Gateway 권한
-        working-directory: ./api-gateway
-        run: chmod +x ./gradlew
-
-      - name: API Gateway 빌드 / 클린
+      # 3. 애플리케이션 빌드 (API Gateway)
+      - name: Build API Gateway
         working-directory: ./api-gateway
         run: |
+          chmod +x ./gradlew
           ./gradlew clean build -x test
           ls build/libs  # 빌드된 .jar 파일 확인
 
-      # 5. Docker 이미지 빌드 및 실행 (유레카 서버)
-      - name: Eureka Server 도커 실행
+      # 4. 애플리케이션 빌드 (Eureka Server)
+      - name: Build Eureka Server
         working-directory: ./eureka-server
         run: |
-          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t eureka-server .  # Docker 이미지 빌드
-          docker run -d --name eureka-server -p 8761:8761 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} eureka-server  # Docker 컨테이너 실행
-          docker ps -a  
+          chmod +x ./gradlew
+          ./gradlew clean build -x test
+          ls build/libs  # 빌드된 .jar 파일 확인
 
-      # 6. Docker 이미지 빌드 및 실행 (API Gateway)
-      - name: API Gateway 도커 실행
-        working-directory: ./api-gateway
-        run: |
-          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t api-gateway .  # Docker 이미지 빌드
-          docker run -d --name api-gateway -p 8080:8080 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} api-gateway  # Docker 컨테이너 실행
-          docker ps -a
+      # 5. SSH를 통해 EC2에 연결하여 배포
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_PUBLIC_IP }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: 22
+          script: |
+            
+            cd ~/easy-home || git clone https://github.com/your-repo/easy-home.git
+            cd easy-home
+            java -version
 
+            sudo apt-get update
+            sudo apt-get install -y openjdk-17-jdk
 
-      # 8. Docker 이미지를 Docker Hub에 푸시 (유레카 서버)
-      - name: Docker 이미지 푸시 (Eureka Server)
-        run: |
-          docker tag eureka-server ${{ secrets.DOCKER_USERNAME }}/eureka-server:latest  
-          docker push ${{ secrets.DOCKER_USERNAME }}/eureka-server:latest 
-      # 9. Docker 이미지를 Docker Hub에 푸시 (API Gateway)
-      - name: Docker 이미지 푸시 (API Gateway)
-        run: |
-          docker tag api-gateway ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest  
-          docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest  
+            cd api-gateway
+            ./gradlew clean build -x test
+            cd ../eureka-server
+            ./gradlew clean build -x test
+
+            pkill -f 'java -jar' || true
+            nohup java -jar api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar &
+            nohup java -jar eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar &
+            echo "Deployment Complete"
