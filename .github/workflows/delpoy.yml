@@ -81,12 +81,11 @@ jobs:
             sudo fuser -k -n tcp 8080 || true  # API Gateway 포트 종료
             sudo fuser -k -n tcp 8761 || true  # Eureka Server 포트 종료
 
-            # API Gateway 서버 실행 (JWT_SECRET_KEY 전달)
+            # API Gateway 서버 실행
             rm -rf /home/ubuntu/easyhome/api-gateway
             mkdir -p /home/ubuntu/easyhome/api-gateway
             mv /home/ubuntu/easyhome/run-api-gateway.jar /home/ubuntu/easyhome/api-gateway/run-api-gateway.jar
             cd /home/ubuntu/easyhome/api-gateway
-            export JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"  # JWT_SECRET_KEY 환경 변수로 설정
             nohup java -jar run-api-gateway.jar > ./output-api-gateway.log 2>&1 &
 
             # Eureka Server 서버 실행
