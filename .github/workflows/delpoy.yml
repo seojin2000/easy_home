@@ -47,31 +47,29 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: 22
           script: |
-          # EC2에서 코드 클론 및 디렉토리 설정
-            rm -rf easy_home
-            cd easy_home || git clone --single-branch --branch feat-ec2 https://github.com/RookiesTeam6/easy_home.git
+            # EC2에서 코드 클론 및 디렉토리 설정
+            rm -rf ~/easy_home
+            cd ~/easy_home || git clone --single-branch --branch feat-ec2 https://github.com/RookiesTeam6/easy_home.git
             cd easy_home
             java -version
             
-            
-          # OpenJDK 17 설치
+            # OpenJDK 17 설치
             sudo apt-get update
             sudo apt-get install -y openjdk-17-jdk
             
-            
-          # API Gateway 및 Eureka Server 빌드
+            # API Gateway 및 Eureka Server 빌드
             cd api-gateway
             ./gradlew clean build -x test
             cd ../eureka-server
             ./gradlew clean build -x test
             
-          # JWT_SECRET_KEY 환경 변수 설정
+            # JWT_SECRET_KEY 환경 변수 설정
             export JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"
             
-          # 기존 Java 프로세스 종료
+            # 기존 Java 프로세스 종료
             pkill -f 'java -jar' || true
             
-          # API Gateway와 Eureka Server 실행 (JWT_SECRET_KEY 환경 변수 전달)
+            # API Gateway와 Eureka Server 실행 (JWT_SECRET_KEY 환경 변수 전달)
             nohup java -jar -DJWT_SECRET_KEY=$JWT_SECRET_KEY api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar &
             nohup java -jar -DJWT_SECRET_KEY=$JWT_SECRET_KEY eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar &
             
