@@ -62,7 +62,7 @@ jobs:
           script_stop: true
           script: |
             rm -rf /home/ubuntu/server/easy_home
-            mkdir /home/ubuntu/server/easy_home
+            mkdir -p /home/ubuntu/server/easy_home
             mv /home/ubuntu/demo/home/eureka-server-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/eureka-server-0.0.1-SNAPSHOT.jar
             mv /home/ubuntu/demo/home/api-gateway-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/api-gateway-0.0.1-SNAPSHOT.jar
             cd /home/ubuntu/server/easy_home
