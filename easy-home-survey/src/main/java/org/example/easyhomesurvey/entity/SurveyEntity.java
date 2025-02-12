@@ -29,4 +29,10 @@ public class SurveyEntity {
     // 질문
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SurveyQuestion> questions;
+
+    // 질문 추가 메소드
+    public void addQuestion(SurveyQuestion question) {
+        questions.add(question);
+        question.setSurvey(this);
+    }
 }

@@ -142,11 +142,36 @@ public class SurveyService {
     }
 
     // 질문 추가
+    public SurveyQuestion addQuestion(Integer surveyPk, QuestionDto questionDto) {
+        // 설문조사 조회
+        SurveyEntity surveyEntity = surveyRepository.findById(surveyPk)
+                .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+
+        // 질문 추가
+        SurveyQuestion newQuestion = new SurveyQuestion();
+        newQuestion.setQuestion(questionDto.getQuestion());
+        surveyEntity.addQuestion(newQuestion);
+
+        // 설문조사 저장
+        surveyRepository.save(surveyEntity);
+        return newQuestion;
+    }
 
     // 질문 수정
 
     // 질문 삭제
+    public void deleteQuestion(Integer surveyPk, Integer questionPk) {
+        // 설문조사 조회
+        SurveyEntity survey = surveyRepository.findById(surveyPk)
+                .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
 
+        // 해당 질문이 존재하는지 확인
+        SurveyQuestion question = surveyQuestionRepository.findById(questionPk)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+
+        // 질문을 삭제
+        surveyQuestionRepository.delete(question);
+    }
     // 설문 삭제
     public void deleteSurvey(Integer surveyPk) {
         // 설문조사 조회
