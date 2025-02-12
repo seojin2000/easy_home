@@ -1,5 +1,6 @@
 package org.example.easyhomesurvey.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.example.easyhomesurvey.Repository.*;
 import org.example.easyhomesurvey.dto.*;
 import org.example.easyhomesurvey.entity.*;
@@ -65,7 +66,7 @@ public class SurveyService {
     // 설문 참여 - 입주민
     public void joinSurvey(List<AnswerDto> answerDtos) {
         for (AnswerDto answerDto : answerDtos) {
-            // 회원번호가 조회
+            // 회원번호 조회
             if (answerDto.getUserPk() == null) {
                 throw new IllegalArgumentException("userPk is null");
             }
@@ -125,6 +126,20 @@ public class SurveyService {
     }
 
     // 설문 수정
+    public SurveyUpdateResDto updateSurvey(Integer surveyPk, SurveyUpdateReqDto requestDto) {
+        // 설문조사 조회
+        SurveyEntity survey = surveyRepository.findById(surveyPk)
+                .orElseThrow(() -> new EntityNotFoundException("Survey not found"));
+
+        // 수정
+        survey.setTitle(requestDto.getTitle());
+        survey.setDescription(requestDto.getDescription());
+        survey.setEndDate(requestDto.getEndDate());
+        surveyRepository.save(survey);
+
+        // 수정 결과 반환
+        return new SurveyUpdateResDto(survey);
+    }
 
     // 질문 추가
 
