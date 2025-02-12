@@ -44,13 +44,22 @@ jobs:
           ls ./build/libs
 
       # 5. SSH를 통해 EC2에 연결하여 업로드
-      - name:  EC2에 연결하여 업로드
+      - name:  EC2에 연결하여 업로드 (유레카)
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: api-gateway-0.0.1-SNAPSHOT.jar, eureka-server-0.0.1-SNAPSHOT.jar
+          source: eureka-server-0.0.1-SNAPSHOT.jar
+          target: /home/ubuntu/demo/home
+
+      - name: EC2에 연결하여 업로드 (GATEWAY)
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: api-gateway-0.0.1-SNAPSHOT.jar
           target: /home/ubuntu/demo/home
 
       - name: 서버 접속
