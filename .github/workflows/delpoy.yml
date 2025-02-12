@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - feat-gateway-deploy
+      - feat-docker
 
 jobs:
   deploy:
