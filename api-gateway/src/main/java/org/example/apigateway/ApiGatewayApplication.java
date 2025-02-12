@@ -12,14 +12,9 @@ import org.springframework.context.annotation.Bean;
 @EnableDiscoveryClient // 이 서비스는 유레카 클라이언트이다 <- eureka-server가 찾아서 등록하는 대상 서비스
 @SpringBootApplication
 public class ApiGatewayApplication {
-//	@Value("${JWT_SECRET_KEY}") // 환경 변수에서 SECRET_KEY 값을 읽음
-//	private String secretKey;
 
 	public static void main(String[] args) {
 
-		Dotenv dotenv = Dotenv.load();
-		String dbHost = dotenv.get("JWT_SECRET_KEY");
-		System.out.println(dbHost);
 		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
 	/**
