@@ -12,7 +12,7 @@ jobs:
     steps:
       # 1. 코드 체크아웃
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # 2. JDK 17 설치
       - name: Install JDK 17
@@ -25,17 +25,21 @@ jobs:
       - name: Build API Gateway
         working-directory: ./api-gateway
         run: |
-          chmod +x ./gradlew  # gradlew 실행 권한 부여
-          ./gradlew clean build -x test
-          ls build/libs  # 빌드된 .jar 파일 확인
+          chmod +x ./gradlew
+          ./gradlew clean build
+          pwd
+          ls
+          ls ./build/libs
 
       # 4. 빌드 (Eureka Server)
       - name: Build Eureka Server
         working-directory: ./eureka-server
         run: |
-          chmod +x ./gradlew  # gradlew 실행 권한 부여
-          ./gradlew clean build -x test
-          ls build/libs  # 빌드된 .jar 파일 확인
+          chmod +x ./gradlew
+          ./gradlew clean build
+          pwd
+          ls
+          ls ./build/libs
 
       # 5. SSH를 통해 EC2에 연결하여 업로드
       - name:  EC2에 연결하여 업로드
@@ -56,7 +60,7 @@ jobs:
           script_stop: true
           script: |
             rm -rf /home/ubuntu/server/easy_home
-            mkdir /home/ubuntu/server/easy_home
+            mkdir -p /home/ubuntu/server/easy_home
             mv /home/ubuntu/demo/home/eureka-server-0.0.1-SNAPSHOT.jar /home/ubuntu/server/web/eureka-server-0.0.1-SNAPSHOT.jar
             mv /home/ubuntu/demo/home/api-gateway-0.0.1-SNAPSHOT.jar /home/ubuntu/server/web/api-gateway-0.0.1-SNAPSHOT.jar
             cd /home/ubuntu/demo/home
