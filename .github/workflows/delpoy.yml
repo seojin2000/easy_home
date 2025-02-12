@@ -26,50 +26,94 @@ jobs:
       - name: Build API Gateway
         working-directory: ./api-gateway
         run: |
-          chmod +x ./gradlew  # gradlew 실행 권한 부여
+          chmod +x ./gradlew
           ./gradlew clean build -x test
-          ls build/libs  # 빌드된 .jar 파일 확인
+          ls build/libs
 
       # 4. 애플리케이션 빌드 (Eureka Server)
       - name: Build Eureka Server
         working-directory: ./eureka-server
         run: |
-          chmod +x ./gradlew  # gradlew 실행 권한 부여
+          chmod +x ./gradlew
           ./gradlew clean build -x test
-          ls build/libs  # 빌드된 .jar 파일 확인
+          ls build/libs
 
-      # 5. SSH를 통해 EC2에 연결하여 배포
+      # 5. EC2에 코드 배포
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            
-            # OpenJDK 17 설치
-            sudo apt-get update
-            sudo apt-get install -y openjdk-17-jdk
-            
             # EC2에서 코드 클론 및 디렉토리 설정
             rm -rf ~/easy_home
             git clone --single-branch --branch feat-ec2 https://github.com/RookiesTeam6/easy_home.git
             cd ~/easy_home
             java -version
-            
+
+      # 6. OpenJDK 17 설치
+      - name: Install OpenJDK 17 on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo apt-get update
+            sudo apt-get install -y openjdk-17-jdk
+
+      # 7. API Gateway 및 Eureka Server 빌드
+      - name: Build API Gateway and Eureka Server on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
             # API Gateway 및 Eureka Server 빌드
-            cd api-gateway
+            cd ~/easy_home/api-gateway
             ./gradlew clean build -x test
-            cd ../eureka-server
+            cd ~/easy_home/eureka-server
             ./gradlew clean build -x test
-            
-            # JWT_SECRET_KEY 환경 변수 설정
-            export JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"
-            
-            # 기존 Java 프로세스 종료
+
+      # 8. 기존 Java 프로세스 종료
+      - name: Stop existing Java processes on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
             pkill -f 'java -jar' || true
-            
-            # API Gateway와 Eureka Server 실행 (JWT_SECRET_KEY 환경 변수 전달)
-            nohup java -jar -DJWT_SECRET_KEY=$JWT_SECRET_KEY api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar &
-            
-            echo "Deployment Complete"
+
+      # 9. 새로운 서버 실행 준비
+      - name: Prepare and start the new server on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            # 서버 실행 준비
+            rm -rf /home/ubuntu/server/web
+            mkdir /home/ubuntu/server/web
+            mv /home/ubuntu/server/demo/run.jar /home/ubuntu/server/web/run.jar
+            cd /home/ubuntu/server/web
+            sudo fuser -k -n tcp 8080 || true
+            nohup java -jar run.jar > ./output.log 2>&1 &
+
+      # 10. 배포 후 서버 정리
+      - name: Clean up after deployment on EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            rm -rf /home/ubuntu/server/demo
+
+      # 11. 배포 완료 메시지 출력
+      - name: Deployment Complete
+        run: |
+          echo "Deployment Complete"
