@@ -158,6 +158,24 @@ public class SurveyService {
     }
 
     // 질문 수정
+    public QuestionUpdateResDto updateQuestion(Integer surveyPk, Integer questionPk, QuestionDto questionDto) {
+        // 설문조사 조회
+        SurveyEntity survey = surveyRepository.findById(surveyPk)
+                .orElseThrow(() -> new EntityNotFoundException("Survey not found with id " + surveyPk));
+
+        // 해당 질문이 존재하는지 확인
+        SurveyQuestion question = surveyQuestionRepository.findById(questionPk)
+                .orElseThrow(() -> new EntityNotFoundException("Question not found with id " + questionPk));
+
+        // 질문 수정
+        question.setQuestion(questionDto.getQuestion());
+
+        // 질문 저장
+        SurveyQuestion updatedQuestion = surveyQuestionRepository.save(question);
+
+        // 수정된 질문을 DTO로 변환하여 반환
+        return new QuestionUpdateResDto(updatedQuestion);
+    }
 
     // 질문 삭제
     public void deleteQuestion(Integer surveyPk, Integer questionPk) {

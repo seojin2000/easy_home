@@ -53,6 +53,13 @@ public class SurveyController {
     }
 
     // 질문 수정
+    @PutMapping("/{surveyPk}/question/{questionPk}")
+    public ResponseEntity<QuestionUpdateResDto> updateQuestion(@PathVariable Integer surveyPk,
+                                                         @PathVariable Integer questionPk,
+                                                         @RequestBody QuestionDto questionDto) {
+        QuestionUpdateResDto updatedQuestionDto = surveyService.updateQuestion(surveyPk, questionPk, questionDto);
+        return ResponseEntity.ok(updatedQuestionDto);
+    }
 
     // 질문 삭제
     @DeleteMapping("/{surveyPk}/question/{questionPk}")
