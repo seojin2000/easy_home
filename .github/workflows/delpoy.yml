@@ -6,7 +6,6 @@ on:
       - main
       - feat-docker
       - feat-ec2
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -39,38 +38,38 @@ jobs:
           ./gradlew clean build -x test
           ls build/libs  # 빌드된 .jar 파일 확인
 
-      # 5. 빌드된 .jar 파일 EC2에 업로드
-      - name: Upload .jar file to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: ./api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar
-          target: /home/ubuntu/server/demo/api-gateway.jar
-
-      - name: Upload Eureka Server .jar to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: ./eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar
-          target: /home/ubuntu/server/demo/eureka-server.jar
-
-      # 6. EC2에서 애플리케이션 실행
-      - name: Deploy and Start Applications on EC2
+      # 5. SSH를 통해 EC2에 연결하여 배포
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # EC2에서 기존 Java 프로세스 종료
+            
+            # OpenJDK 17 설치
+            sudo apt-get update
+            sudo apt-get install -y openjdk-17-jdk
+            
+            # EC2에서 코드 클론 및 디렉토리 설정
+            rm -rf ~/easy_home
+            git clone --single-branch --branch feat-ec2 https://github.com/RookiesTeam6/easy_home.git
+            cd ~/easy_home
+            java -version
+            
+            # API Gateway 및 Eureka Server 빌드
+            cd api-gateway
+            ./gradlew clean build -x test
+            cd ../eureka-server
+            ./gradlew clean build -x test
+            
+            # JWT_SECRET_KEY 환경 변수 설정
+            export JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"
+            
+            # 기존 Java 프로세스 종료
             pkill -f 'java -jar' || true
             
-            # API Gateway 및 Eureka Server 실행
-            nohup java -jar /home/ubuntu/server/demo/api-gateway.jar -DJWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} > /home/ubuntu/server/demo/api-gateway.log 2>&1 &
-            nohup java -jar /home/ubuntu/server/demo/eureka-server.jar -DJWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} > /home/ubuntu/server/demo/eureka-server.log 2>&1 &
+            # API Gateway와 Eureka Server 실행 (JWT_SECRET_KEY 환경 변수 전달)
+            nohup java -jar -DJWT_SECRET_KEY=$JWT_SECRET_KEY api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar &
             
             echo "Deployment Complete"
