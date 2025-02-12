@@ -51,6 +51,7 @@ public class SurveyService {
         // 질문 리스트 저장
         List<QuestionDto> questions = surveyDto.getQuestions();
             // 최소 1개의 질문이 있어야함
+        // 추가 - question 중복 여부 확인
         if (questions == null || questions.isEmpty()) {
             throw new IllegalArgumentException("At least one question must be provided");
         }
@@ -72,7 +73,6 @@ public class SurveyService {
                     .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
 
             // questionPk 조회
-            // 추가 - question 중복 여부 확인
             if (answerDto.getQuestionPk() == null) {
                 throw new IllegalArgumentException("questionPk is null");
             }
@@ -122,6 +122,23 @@ public class SurveyService {
         surveyResultDto.setQuestions(questionResults);
 
         return surveyResultDto;
+    }
+
+    // 설문 수정
+
+    // 질문 추가
+
+    // 질문 수정
+
+    // 질문 삭제
+
+    // 설문 삭제
+    public void deleteSurvey(Integer surveyPk) {
+        // 설문조사 조회
+        SurveyEntity survey = surveyRepository.findById(surveyPk)
+                .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+
+        surveyRepository.delete(survey);
     }
 }
 
