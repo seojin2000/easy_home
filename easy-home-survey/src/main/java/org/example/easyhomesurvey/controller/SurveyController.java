@@ -1,6 +1,7 @@
 package org.example.easyhomesurvey.controller;
 
 import org.example.easyhomesurvey.dto.*;
+import org.example.easyhomesurvey.entity.SurveyQuestion;
 import org.example.easyhomesurvey.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,10 +45,22 @@ public class SurveyController {
     }
 
     // 질문 추가
+    @PostMapping("/{surveyPk}/question")
+    public ResponseEntity<String> addQuestion(@PathVariable Integer surveyPk,
+                                                      @RequestBody QuestionDto questionDto) {
+        SurveyQuestion newQuestion = surveyService.addQuestion(surveyPk, questionDto);
+        return ResponseEntity.ok("질문 추가 완료");
+    }
 
     // 질문 수정
 
     // 질문 삭제
+    @DeleteMapping("/{surveyPk}/question/{questionPk}")
+    public ResponseEntity<String> deleteQuestion(@PathVariable Integer surveyPk,
+                                                 @PathVariable Integer questionPk) {
+        surveyService.deleteQuestion(surveyPk, questionPk);
+        return ResponseEntity.ok("질문 삭제 완료");
+    }
 
     // 설문 삭제
     @DeleteMapping("/{surveyPk}")
