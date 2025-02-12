@@ -48,14 +48,14 @@ jobs:
       - name: Eureka Server 도커 실행
         working-directory: ./eureka-server
         run: |
-          docker build -t eureka-server .
-          docker run -d --name eureka-server -p 8761:8761 --env SECRET_KEY=${{ secrets.RAW_SECRET_KEY }} eureka-server
+          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t eureka-server .
+          docker run -d --name eureka-server -p 8761:8761 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} eureka-server
           docker ps -a  
 
       # 6. Docker 이미지 빌드 및 실행 (API Gateway)
       - name: API Gateway 도커 실행
         working-directory: ./api-gateway
         run: |
-          docker build -t api-gateway .
-          docker run -d --name api-gateway -p 8080:8080 --env SECRET_KEY=${{ secrets.RAW_SECRET_KEY }} api-gateway
-          docker ps -a  
+          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t api-gateway .
+          docker run -d --name api-gateway -p 8080:8080 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} api-gateway
+          docker ps -a

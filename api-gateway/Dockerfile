@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . .
 
 RUN chmod +x ./gradlew
-RUN ./gradlew clean build --no-daemon
+RUN ./gradlew clean build -x test --no-daemon
 
 # 실행 단계
 FROM openjdk:17-jdk
@@ -18,7 +18,7 @@ COPY --from=builder /app/build/libs/*SNAPSHOT.jar ./app.jar
 # 빌드 중 전달된 환경 변수 설정
 ARG SECRET_KEY
 
-# 런타임에서 환경 변수 설정
+# Docker에서 바로 환경 변수를 사용하도록 설정 (GitHub Secrets 사용)
 ENV SECRET_KEY=${SECRET_KEY}
 
 EXPOSE 8080

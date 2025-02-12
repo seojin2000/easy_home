@@ -45,6 +45,6 @@ jwt:
   token:
     raw_secret_key: ${JWT_SECRET_KEY}
   # 만료시간을 임의로 짧게 부여 -> 조정가능
-  expiration: 10
+  expiration: 3600
 
 # RDB는 서비스별로 따로 관리

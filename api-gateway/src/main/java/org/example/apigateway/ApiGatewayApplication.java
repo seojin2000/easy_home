@@ -17,9 +17,9 @@ public class ApiGatewayApplication {
 
 	public static void main(String[] args) {
 
-		Dotenv dotenv = Dotenv.load();
-		String dbHost = dotenv.get("JWT_SECRET_KEY");
-		System.out.println(dbHost);
+//		Dotenv dotenv = Dotenv.load();
+//		String dbHost = dotenv.get("JWT_SECRET_KEY");
+//		System.out.println(dbHost);
 		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
 	/**
