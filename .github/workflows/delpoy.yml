@@ -48,6 +48,7 @@ jobs:
           port: 22
           script: |
             # EC2에서 코드 클론 및 디렉토리 설정
+            rm -rf ~/easy-home
             cd ~/easy-home || git clone --single-branch --branch feat-ec2 https://github.com/RookiesTeam6/easy_home.git
             cd easy-home
             java -version
