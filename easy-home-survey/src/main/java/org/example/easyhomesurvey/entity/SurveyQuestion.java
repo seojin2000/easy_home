@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name="survey_question")
 @Data
@@ -20,4 +22,8 @@ public class SurveyQuestion {
     private SurveyEntity survey;
 
     private String question;
+
+    // 응답
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SurveyAnswer> answers;
 }

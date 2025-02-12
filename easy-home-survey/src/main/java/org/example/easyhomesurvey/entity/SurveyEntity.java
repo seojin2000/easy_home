@@ -27,6 +27,6 @@ public class SurveyEntity {
     private LocalDateTime endDate;
 
     // 질문
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SurveyQuestion> questions;
 }

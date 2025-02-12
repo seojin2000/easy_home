@@ -27,12 +27,27 @@ public class SurveyController {
     @PostMapping("/join")
     public ResponseEntity<String> joinSurvey(@RequestBody List<AnswerDto> answerDtos) {
         surveyService.joinSurvey(answerDtos);
-        return ResponseEntity.ok("설문 참여 완료");
+        return ResponseEntity.ok("설문조사 참여 완료");
     }
 
     // 설문 결과 조회
     @GetMapping("/{surveyPk}")
     public SurveyResultDto getSurveyResults(@PathVariable Integer surveyPk) {
         return surveyService.getSurveyResults(surveyPk);
+    }
+
+    // 설문 수정
+
+    // 질문 추가
+
+    // 질문 수정
+
+    // 질문 삭제
+
+    // 설문 삭제
+    @DeleteMapping("/{surveyPk}")
+    public ResponseEntity<String> deleteSurvey(@PathVariable Integer surveyPk) {
+        surveyService.deleteSurvey(surveyPk);
+        return ResponseEntity.ok("설문조사 삭제 완료");
     }
 }

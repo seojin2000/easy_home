@@ -13,8 +13,6 @@ public class SurveyAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer answerPk;
 
-    // 인증 기능 추가 시 외래키 삭제
-    // private Integer surveyPk;
     @ManyToOne
     @JoinColumn(name="question_pk", nullable=false)
     private SurveyQuestion question;
