@@ -53,9 +53,11 @@ jobs:
             cd easy_home
             java -version
             
+            
           # OpenJDK 17 설치
             sudo apt-get update
             sudo apt-get install -y openjdk-17-jdk
+            
             
           # API Gateway 및 Eureka Server 빌드
             cd api-gateway
