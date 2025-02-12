@@ -32,7 +32,7 @@ eureka:
   client:
     service-url:
       # 현재는 미구현 상태로 404임
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://3.24.64.156:8761
   # 유레카 서버에 서비스 등록, 헬시체크(계속 살아 있는지 체크 주기 지정)
   # 체크 후 특정 시간동안 갱신이 안되면, 유레카 서버에서 제거 -> 제한시간 지정
   instance:
