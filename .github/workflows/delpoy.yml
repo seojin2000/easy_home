@@ -80,10 +80,11 @@ jobs:
             cd /home/ubuntu/server/easy_home
             
             # 깃 시크릿 사용
-            export EC2_HOST=${{ secrets.EC2_HOST }}  
+            export EC2_HOST=${{ secrets.EC2_HOST }}
+            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             source ~/.bashrc
             echo "EC2 Host: $EC2_HOST"
-            echo "$JWT_SECRET_KEY"
+            echo "EC2 Host: $JWT_SECRET_KEY"
             
             sudo fuser -k -n tcp 8761 || true
             sudo fuser -k -n tcp 8080 || true
