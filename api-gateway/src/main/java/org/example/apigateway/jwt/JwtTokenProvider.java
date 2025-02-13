@@ -40,8 +40,6 @@ public class JwtTokenProvider {
         // 시크릿키를 사용에 맞게 변환 처리
         this.secretKey = Keys.hmacShaKeyFor(rawSecretKey.getBytes());
     }
-
-
     // 기능
     // 토큰 생성 -> 기본 재료는 이메일
     public String createToken(String email){
@@ -65,8 +63,6 @@ public class JwtTokenProvider {
                 .signWith(this.secretKey, SignatureAlgorithm.HS256) // 기본 알고리즘 적용
                 .compact();
     }
-
-
     // 토큰 유효성 검사
     // 사용자 페이지 요청 -> http 헤더 정보에 jwt 토큰(엑세스 토큰)이 전달 -> 검증
     public boolean validateToken(String token){
@@ -79,8 +75,6 @@ public class JwtTokenProvider {
             return false;
         }
     }
-
-
     // 주어진 토큰을 통해서 이메일 획득
     public String getEmailFromToken(String token){
         // 토큰 -> 추가 정보를 가진 그릇 획득 -> 이메일(향후 추가 정보 가능) 획득
