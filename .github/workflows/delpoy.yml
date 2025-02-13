@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      EC2_HOST: ${{ secrets.EC2_HOST }}
 
     steps:
       # 1. 코드 체크아웃
@@ -79,8 +80,10 @@ jobs:
             cd /home/ubuntu/server/easy_home
             
             # 깃 시크릿 사용
+            export EC2_HOST=${{ secrets.EC2_HOST }}  
             source ~/.bashrc
-            echo $JWT_SECRET_KEY
+            echo "EC2 Host: $EC2_HOST"
+            echo "$JWT_SECRET_KEY"
             
             sudo fuser -k -n tcp 8761 || true
             sudo fuser -k -n tcp 8080 || true

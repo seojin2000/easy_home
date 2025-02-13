@@ -13,3 +13,5 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
+    serviceUrl:
+      defaultZone: http://${EC2_HOST}:8761/eureka/
