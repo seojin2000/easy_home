@@ -51,7 +51,12 @@ public class SecurityConfig {
                                 // 회원가입
                                 "/user/signup",
                                 // 이메일 인증
-                                "/user/vaild"
+                                "/user/vaild",
+                                "/api/members",
+                                "/api/chat-rooms",
+                                "/api/messages",
+                                "/api/messages/rooms/*",
+                                "/api/messages/*/read"
                                 // 개별 서비스별 URL
 
                         )
