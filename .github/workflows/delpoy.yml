@@ -6,77 +6,79 @@ on:
       - main
       # - feat-docker
 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
 
     steps:
-
-      # 7. Docker Hub 로그인 (Docker Hub 사용자명 및 비밀번호를 GitHub Secrets에 저장)
-      - name: Docker Hub 로그인
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # GitHub Secrets에 저장된 Docker Hub 사용자명
-          password: ${{ secrets.DOCKER_PASSWORD }}  # GitHub Secrets에 저장된 Docker Hub 비밀번호
-
       # 1. 코드 체크아웃
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # 2. JDK 17 설치
-      - name: JDK 17 버전 설치
+      - name: Install JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 3. 유레카 서버 권한 설정 및 빌드
-      - name: 유레카 서버 권한
-        working-directory: ./eureka-server
-        run: chmod +x ./gradlew
-
-      - name: 유레카 서버 빌드 / 클린
-        working-directory: ./eureka-server
-        run: |
-          ./gradlew clean bootJar -x test
-          ls build/libs  # 빌드된 .jar 파일 확인
-
-      # 4. API Gateway 권한 설정 및 빌드
-      - name: API-Gateway 권한
-        working-directory: ./api-gateway
-        run: chmod +x ./gradlew
-
-      - name: API Gateway 빌드 / 클린
+      # 3. 빌드 (API Gateway)
+      - name: Build API Gateway
         working-directory: ./api-gateway
         run: |
-          ./gradlew clean build -x test
-          ls build/libs  # 빌드된 .jar 파일 확인
+          chmod +x ./gradlew
+          ./gradlew clean build
+          pwd
+          ls
+          ls ./build/libs
 
-      # 5. Docker 이미지 빌드 및 실행 (유레카 서버)
-      - name: Eureka Server 도커 실행
+      # 4. 빌드 (Eureka Server)
+      - name: Build Eureka Server
         working-directory: ./eureka-server
         run: |
-          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t eureka-server .  # Docker 이미지 빌드
-          docker run -d --name eureka-server -p 8761:8761 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} eureka-server  # Docker 컨테이너 실행
-          docker ps -a  
+          chmod +x ./gradlew
+          ./gradlew clean build
+          pwd
+          ls
+          ls ./build/libs
 
-      # 6. Docker 이미지 빌드 및 실행 (API Gateway)
-      - name: API Gateway 도커 실행
-        working-directory: ./api-gateway
-        run: |
-          docker build --build-arg SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} -t api-gateway .  # Docker 이미지 빌드
-          docker run -d --name api-gateway -p 8080:8080 --env SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} api-gateway  # Docker 컨테이너 실행
-          docker ps -a
+      # 5. SSH를 통해 EC2에 연결하여 업로드
+      - name: EC2에 연결하여 업로드 (유레카)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: ./eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar, ./api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar
+          target: /home/ubuntu/demo/home
 
+      - name: EC2에서 업로드된 파일 확인
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            ls -l /home/ubuntu/demo/home/eureka-server/build/libs/
+            ls -l /home/ubuntu/demo/home/api-gateway/build/libs/
 
-      # 8. Docker 이미지를 Docker Hub에 푸시 (유레카 서버)
-      - name: Docker 이미지 푸시 (Eureka Server)
-        run: |
-          docker tag eureka-server ${{ secrets.DOCKER_USERNAME }}/eureka-server:latest  
-          docker push ${{ secrets.DOCKER_USERNAME }}/eureka-server:latest 
-      # 9. Docker 이미지를 Docker Hub에 푸시 (API Gateway)
-      - name: Docker 이미지 푸시 (API Gateway)
-        run: |
-          docker tag api-gateway ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest  
-          docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest  
+      - name: 서버 접속
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script_stop: true
+          script: |
+            rm -rf /home/ubuntu/server/easy_home
+            mkdir -p /home/ubuntu/server/easy_home
+            mv /home/ubuntu/demo/home/eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/eureka-server-0.0.1-SNAPSHOT.jar
+            mv /home/ubuntu/demo/home/api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/api-gateway-0.0.1-SNAPSHOT.jar
+            cd /home/ubuntu/server/easy_home
+            sudo fuser -k -n tcp 8761 || true
+            sudo fuser -k -n tcp 8080 || true
+            nohup java -jar eureka-server-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
+            nohup java -jar api-gateway-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
+            rm -rf /home/ubuntu/server/demo
