@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-      - feat-ec2
+      - feat-docker
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
