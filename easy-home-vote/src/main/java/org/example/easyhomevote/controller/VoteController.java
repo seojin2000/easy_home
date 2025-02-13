@@ -1,6 +1,7 @@
 package org.example.easyhomevote.controller;
 
 import org.example.easyhomevote.dto.*;
+import org.example.easyhomevote.entity.VoteOption;
 import org.example.easyhomevote.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class VoteController {
         return ResponseEntity.ok("투표 참여 완료");
     }
 
-    // 투표 결과 조회
+    // 투표 결과 조회 - 관리자, 입주민
     @GetMapping("/{votePk}")
     public VoteResultDto getVoteResults(@PathVariable Integer votePk) {
         return voteService.getVoteResults(votePk);
@@ -48,28 +49,28 @@ public class VoteController {
         return ResponseEntity.ok("투표 삭제 완료");
     }
 
-/*    // 선택지 추가
-    @PostMapping("/{surveyPk}/question")
-    public ResponseEntity<String> addQuestion(@PathVariable Integer surveyPk,
-                                              @RequestBody QuestionDto questionDto) {
-        SurveyQuestion newQuestion = voteService.addQuestion(surveyPk, questionDto);
+    // 선택지 추가
+    @PostMapping("/{votePk}/option")
+    public ResponseEntity<String> addOption(@PathVariable Integer votePk,
+                                              @RequestBody OptionDto optionDto) {
+        VoteOption voteOption = voteService.addOption(votePk, optionDto);
         return ResponseEntity.ok("선택지 추가 완료");
     }
 
     // 선택지 수정
-    @PutMapping("/{surveyPk}/question/{questionPk}")
-    public ResponseEntity<QuestionUpdateResDto> updateQuestion(@PathVariable Integer surveyPk,
-                                                               @PathVariable Integer questionPk,
-                                                               @RequestBody QuestionDto questionDto) {
-        QuestionUpdateResDto updatedQuestionDto = voteService.updateQuestion(surveyPk, questionPk, questionDto);
-        return ResponseEntity.ok(updatedQuestionDto);
+    @PutMapping("/{votePk}/option/{optionPk}")
+    public ResponseEntity<OptionUpdateResDto> updateOption(@PathVariable Integer votePk,
+                                                               @PathVariable Integer optionPk,
+                                                               @RequestBody OptionDto optionDto) {
+        OptionUpdateResDto updatedOptionDto = voteService.updateOption(votePk, optionPk, optionDto);
+        return ResponseEntity.ok(updatedOptionDto);
     }
 
     // 선택지 삭제
-    @DeleteMapping("/{surveyPk}/question/{questionPk}")
-    public ResponseEntity<String> deleteQuestion(@PathVariable Integer surveyPk,
-                                                 @PathVariable Integer questionPk) {
-        voteService.deleteQuestion(surveyPk, questionPk);
+    @DeleteMapping("/{votePk}/option/{optionPk}")
+    public ResponseEntity<String> deleteOption(@PathVariable Integer votePk,
+                                                 @PathVariable Integer optionPk) {
+        voteService.deleteOption(votePk, optionPk);
         return ResponseEntity.ok("선택지 삭제 완료");
-    }*/
+    }
 }
