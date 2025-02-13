@@ -1,7 +1,6 @@
 package org.example.easyhomevote.controller;
 
 import org.example.easyhomevote.dto.*;
-import org.example.easyhomevote.entity.VoteOption;
 import org.example.easyhomevote.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
