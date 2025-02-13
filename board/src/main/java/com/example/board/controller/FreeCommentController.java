@@ -20,7 +20,6 @@ public class FreeCommentController {
     // 댓글 작성
     @PostMapping("free/{postId}")
     public FreeCommentEntity createComment(@PathVariable Integer postId, @RequestBody FreeCommentDto freeCommentDto) {
-        // 여기에서 PostEntity를 조회하는 로직이 필요함
         FreeEntity post = freeService.getPost(postId);
         return freeCommentService.createComment(post, freeCommentDto.getAuthor(), freeCommentDto.getContent());
     }

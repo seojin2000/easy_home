@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user/complaint-comment")
 public class ComplaintCommentController {
 
-    private final ComplaintCommentService complaintCommentService;  // 서비스 타입 변경
-    private final ComplaintService complaintService;  // ComplaintService 추가
+    private final ComplaintCommentService complaintCommentService;
+    private final ComplaintService complaintService;
 
     // 댓글 작성
     @PostMapping("complaint/{complaintId}")  // URL 매핑 변경
@@ -33,8 +33,8 @@ public class ComplaintCommentController {
 
     // 댓글 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComplaintComment(@PathVariable Integer id) {  // 메소드 이름 변경
-        complaintCommentService.deletecomplaintComment(id);  // 메소드 이름 변경
+    public ResponseEntity<Void> deleteComplaintComment(@PathVariable Integer id) {
+        complaintCommentService.deletecomplaintComment(id);
         return ResponseEntity.noContent().build();
     }
 

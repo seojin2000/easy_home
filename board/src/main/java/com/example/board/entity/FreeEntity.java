@@ -23,12 +23,4 @@ public class FreeEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "free", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FreeCommentEntity> freecomments;
 
-//    @ManyToOne
-//    @JoinColumn(name = "board_id")
-//    private Board board;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private Member member;
-
 }
