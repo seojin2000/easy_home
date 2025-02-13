@@ -1,5 +1,6 @@
 package org.example.easyhomevote.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.example.easyhomevote.dto.*;
 import org.example.easyhomevote.entity.*;
 import org.example.easyhomevote.repository.*;
@@ -159,53 +160,62 @@ public class VoteService {
         voteRepository.delete(vote);
     }
 
-    /*// 선택지 추가
-    public SurveyQuestion addQuestion(Integer surveyPk, QuestionDto questionDto) {
+    // 선택지 추가
+    public void addOption(Integer votePk, OptionDto optionDto) {
         // 투표 조회
-        SurveyEntity surveyEntity = surveyRepository.findById(surveyPk)
-                .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+        VoteEntity voteEntity = voteRepository.findById(votePk)
+                .orElseThrow(() -> new IllegalArgumentException("Vote not found"));
 
         // 선택지 추가
-        SurveyQuestion newQuestion = new SurveyQuestion();
-        newQuestion.setQuestion(questionDto.getQuestion());
-        surveyEntity.addQuestion(newQuestion);
+        VoteOption newOption = new VoteOption();
+        newOption.setContent(optionDto.getContent());
+        voteEntity.addOption(newOption);
 
         // 투표 저장
-        surveyRepository.save(surveyEntity);
-        return newQuestion;
+        voteRepository.save(voteEntity);
     }
 
     // 선택지 수정
-    public QuestionUpdateResDto updateQuestion(Integer surveyPk, Integer questionPk, QuestionDto questionDto) {
+    public OptionUpdateResDto updateOption(Integer votePk, Integer optionPk, OptionDto optionDto) {
         // 투표 조회
-        SurveyEntity survey = surveyRepository.findById(surveyPk)
-                .orElseThrow(() -> new EntityNotFoundException("Survey not found with id " + surveyPk));
+        VoteEntity vote = voteRepository.findById(votePk)
+                .orElseThrow(() -> new EntityNotFoundException("Vote not found with id " + votePk));
 
         // 해당 선택지가 존재하는지 확인
-        SurveyQuestion question = surveyQuestionRepository.findById(questionPk)
-                .orElseThrow(() -> new EntityNotFoundException("Question not found with id " + questionPk));
+        VoteOption option = voteOptionRepository.findById(optionPk)
+                .orElseThrow(() -> new EntityNotFoundException("Option not found with id " + optionPk));
+
+        // 입력된 votePk와 option의 votePk가 동일한지 확인
+        if (!option.getVote().getVotePk().equals(vote.getVotePk())) {
+            throw new IllegalArgumentException("Option does not belong to the specified vote.");
+        }
 
         // 선택지 수정
-        question.setQuestion(questionDto.getQuestion());
+        option.setContent(optionDto.getContent());
 
         // 선택지 저장
-        SurveyQuestion updatedQuestion = surveyQuestionRepository.save(question);
+        VoteOption updatedOption = voteOptionRepository.save(option);
 
         // 수정된 선택지를 DTO로 변환하여 반환
-        return new QuestionUpdateResDto(updatedQuestion);
+        return new OptionUpdateResDto(updatedOption);
     }
 
     // 선택지 삭제
-    public void deleteQuestion(Integer surveyPk, Integer questionPk) {
+    public void deleteOption(Integer votePk, Integer optionPk) {
         // 투표 조회
-        SurveyEntity survey = surveyRepository.findById(surveyPk)
-                .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+        VoteEntity vote = voteRepository.findById(votePk)
+                .orElseThrow(() -> new EntityNotFoundException("Vote not found with id " + votePk));
 
         // 해당 선택지가 존재하는지 확인
-        SurveyQuestion question = surveyQuestionRepository.findById(questionPk)
-                .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+        VoteOption option = voteOptionRepository.findById(optionPk)
+                .orElseThrow(() -> new EntityNotFoundException("Option not found with id " + optionPk));
+
+        // 입력된 votePk와 option의 votePk가 동일한지 확인
+        if (!option.getVote().getVotePk().equals(vote.getVotePk())) {
+            throw new IllegalArgumentException("Option does not belong to the specified vote.");
+        }
 
         // 선택지 삭제
-        surveyQuestionRepository.delete(question);
-    }*/
+        voteOptionRepository.delete(option);
+    }
 }
