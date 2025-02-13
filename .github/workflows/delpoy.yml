@@ -79,10 +79,12 @@ jobs:
             cd /home/ubuntu/server/easy_home
             
             # 깃 시크릿 사용
-            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            echo "export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> ~/.bashrc
+            source ~/.bashrc
             
             sudo fuser -k -n tcp 8761 || true
             sudo fuser -k -n tcp 8080 || true
+            
             nohup java -jar eureka-server-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
             nohup java -jar api-gateway-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
             rm -rf /home/ubuntu/server/demo
