@@ -53,7 +53,7 @@ public class VoteController {
     @PostMapping("/{votePk}/option")
     public ResponseEntity<String> addOption(@PathVariable Integer votePk,
                                               @RequestBody OptionDto optionDto) {
-        VoteOption voteOption = voteService.addOption(votePk, optionDto);
+        voteService.addOption(votePk, optionDto);
         return ResponseEntity.ok("선택지 추가 완료");
     }
 

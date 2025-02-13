@@ -161,7 +161,7 @@ public class VoteService {
     }
 
     // 선택지 추가
-    public VoteOption addOption(Integer votePk, OptionDto optionDto) {
+    public void addOption(Integer votePk, OptionDto optionDto) {
         // 투표 조회
         VoteEntity voteEntity = voteRepository.findById(votePk)
                 .orElseThrow(() -> new IllegalArgumentException("Vote not found"));
@@ -173,7 +173,6 @@ public class VoteService {
 
         // 투표 저장
         voteRepository.save(voteEntity);
-        return newOption;
     }
 
     // 선택지 수정
