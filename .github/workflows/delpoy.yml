@@ -78,10 +78,13 @@ jobs:
             mv /home/ubuntu/demo/home/api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/api-gateway-0.0.1-SNAPSHOT.jar
             cd /home/ubuntu/server/easy_home
             
+            # 깃 시크릿 사용
+            source ~/.bashrc
+            echo $JWT_SECRET_KEY
+            
             sudo fuser -k -n tcp 8761 || true
             sudo fuser -k -n tcp 8080 || true
             
-            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             nohup java -jar eureka-server-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
             nohup java -jar api-gateway-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
             rm -rf /home/ubuntu/server/demo
