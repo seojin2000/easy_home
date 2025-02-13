@@ -16,10 +16,12 @@ public class UserDto {
     @NotNull
     private String email;
     @NotNull
-    private String userName;
-    @NotNull
     private String password;
-    // 기본적인 롤 적용(기본값)
-    private String role = "ROLE_USER"; // 등급, 레벨,등등 적용하여 구성가능함
+    @NotNull
+    private String userName;
+
+    private String role = "USER"; // 등급, 레벨,등등 적용하여 구성가능함
     // ROLE_USER, ROLE_ADMIN, ROLE_SELLER
+
+    private String address;
 }
