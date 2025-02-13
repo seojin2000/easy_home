@@ -79,8 +79,7 @@ jobs:
             cd /home/ubuntu/server/easy_home
             
             # 깃 시크릿 사용
-            echo "export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> ~/.bashrc
-            source ~/.bashrc
+            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             
             sudo fuser -k -n tcp 8761 || true
             sudo fuser -k -n tcp 8080 || true
