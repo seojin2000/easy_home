@@ -14,6 +14,10 @@ public class VoteAnswer {
     private Integer answerPk;
 
     @ManyToOne
+    @JoinColumn(name="vote_pk", nullable = false)
+    private VoteEntity vote;
+
+    @ManyToOne
     @JoinColumn(name="option_pk", nullable=false)
     private VoteOption option;
 
