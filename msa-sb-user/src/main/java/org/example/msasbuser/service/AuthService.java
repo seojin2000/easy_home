@@ -62,25 +62,14 @@ public class AuthService {
         return "로그인 성공";
     }
 
-    //    public void logout(String email, String accessToken) {
-//        // 0. 토큰 검증
-//        if( !jwtTokenProvider.validateToken(accessToken) ) {
-//            throw new IllegalArgumentException("부적절한 토큰");
-//        }
-//        // 1. 로그아웃 -> 레디스에서 이메일에 해당되는 모든 토큰 삭제
-//        tokenService.deleteRefreshToken(email);
-//        // 엑세스 토큰 저장 -> 여러 기기에 중복 로그인시 활용 -> 모든 기기 동시 로그아웃 처리!!
-//        // PC에서 로그인 -> 테블릿은 로그아웃 처리(다른 기긱에서 로그인 하였습니다.)
-//    }
-    public void logout(String email) {
+    public void logout(String email, String accessToken) {
         // 0. 토큰 검증
-//        if( !jwtTokenProvider.validateToken(accessToken) ) {
-//            throw new IllegalArgumentException("부적절한 토큰");
-//        }
+        if( !jwtTokenProvider.validateToken(accessToken) ) {
+            throw new IllegalArgumentException("부적절한 토큰");
+        }
         // 1. 로그아웃 -> 레디스에서 이메일에 해당되는 모든 토큰 삭제
         tokenService.deleteRefreshToken(email);
         // 엑세스 토큰 저장 -> 여러 기기에 중복 로그인시 활용 -> 모든 기기 동시 로그아웃 처리!!
         // PC에서 로그인 -> 테블릿은 로그아웃 처리(다른 기긱에서 로그인 하였습니다.)
     }
-
 }
