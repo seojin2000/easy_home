@@ -84,7 +84,7 @@ jobs:
             export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             source ~/.bashrc
             echo "EC2 Host: $EC2_HOST"
-            echo "EC2 Host: $JWT_SECRET_KEY"
+            echo "JWT_SECRET_KEY: $JWT_SECRET_KEY"
             
             sudo fuser -k -n tcp 8761 || true
             sudo fuser -k -n tcp 8080 || true
