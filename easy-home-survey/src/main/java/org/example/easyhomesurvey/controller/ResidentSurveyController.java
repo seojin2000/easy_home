@@ -1,7 +1,6 @@
 package org.example.easyhomesurvey.controller;
 
 import org.example.easyhomesurvey.dto.*;
-import org.example.easyhomesurvey.entity.SurveyQuestion;
 import org.example.easyhomesurvey.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
