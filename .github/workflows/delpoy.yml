@@ -117,6 +117,7 @@ jobs:
           script: |
             sudo docker ps -a
             sudo docker start redis-db
+            sudo docker exec -it redis-db redis-cli
             
       - name: 서버 접속
         uses: appleboy/ssh-action@v1.2.0

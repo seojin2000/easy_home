@@ -17,6 +17,8 @@ public class TokenService {
 
     // 리플레시 토큰을 이메일을 통해서 레디스에서 획득
     public String getRefreshToken(String email) {
+        System.out.println("레디스로 보내는 이메일" + email);
+        System.out.println("받는 토큰"+redisTemplate.opsForValue().get( email ));
         return redisTemplate.opsForValue().get( email ); // 키:email, 값:토큰 -> 만료되면 삭제됨
     }
     // 리플레시 토큰 레디스에 저장
