@@ -150,6 +150,7 @@ jobs:
             echo "MySQL Host: $MYSQL_HOST"
             echo "MySQL User: $MYSQL_USER"
             echo "EMAIL_USERNAME: $EMAIL_USERNAME"
+            echo "EMAIL_EMAIL_PASSWORD: $EMAIL_PASSWORD"
             
             sudo fuser -k -n tcp 8761 || true
             sudo fuser -k -n tcp 8080 || true
