@@ -31,7 +31,7 @@ jobs:
           java-version: '17'
 
       # 3. 빌드 (API Gateway)
-      - name: Build API Gateway
+      - name: 빌드 (API Gateway)
         working-directory: ./api-gateway
         run: |
           chmod +x ./gradlew
@@ -41,7 +41,7 @@ jobs:
           ls ./build/libs
 
       # 3. 빌드 (Eureka Server)
-      - name: Build Eureka Server
+      - name: 빌드 (Eureka Server)
         working-directory: ./eureka-server
         run: |
           chmod +x ./gradlew
@@ -51,9 +51,10 @@ jobs:
           ls ./build/libs
 
       # 3. 빌드 (msa-db-user)
-      - name: Build msa-db-user
-        working-directory: msa-db-user
+      - name: 빌드 (msa-db-user)
+        working-directory: ./msa-db-user
         run: |
+          ls -R
           chmod +x ./gradlew
           ./gradlew clean build
           pwd
