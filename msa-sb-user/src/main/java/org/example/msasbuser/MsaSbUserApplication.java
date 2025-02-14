@@ -10,5 +10,4 @@ public class MsaSbUserApplication {
     public static void main(String[] args) {
         SpringApplication.run(MsaSbUserApplication.class, args);
     }
-
 }

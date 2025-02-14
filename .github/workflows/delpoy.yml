@@ -60,14 +60,24 @@ jobs:
           ls
           ls ./build/libs
 
+      # 3. 빌드 (redis-db-test)
+      - name: 빌드 (redis-db-test)
+        working-directory: ./redis-db-test
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
+          pwd
+          ls
+          ls ./build/libs
+
       # 5. SSH를 통해 EC2에 연결하여 업로드
-      - name: EC2에 연결하여 업로드 (유레카)
+      - name: EC2에 연결하여 업로드
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: ./eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar, ./api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar, ./msa-sb-user/build/libs/msa-sb-user-0.0.1-SNAPSHOT.jar
+          source: ./eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar, ./api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar, ./msa-sb-user/build/libs/msa-sb-user-0.0.1-SNAPSHOT.jar, ./redis-db-test/build/libs/redis-db-test-0.0.1-SNAPSHOT.jar
           target: /home/ubuntu/demo/home
 
       - name: EC2에서 업로드된 파일 확인
@@ -80,6 +90,7 @@ jobs:
             ls -l /home/ubuntu/demo/home/eureka-server/build/libs/
             ls -l /home/ubuntu/demo/home/api-gateway/build/libs/
             ls -l /home/ubuntu/demo/home/msa-sb-user/build/libs/
+            ls -l /home/ubuntu/demo/home/redis-db-test/build/libs/
 
       - name: MySQL 연결 확인
         uses: appleboy/ssh-action@v1.2.0
@@ -108,6 +119,7 @@ jobs:
             mv /home/ubuntu/demo/home/eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/eureka-server-0.0.1-SNAPSHOT.jar
             mv /home/ubuntu/demo/home/api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/api-gateway-0.0.1-SNAPSHOT.jar
             mv /home/ubuntu/demo/home/msa-sb-user/build/libs/msa-sb-user-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/msa-sb-user-0.0.1-SNAPSHOT.jar
+            mv /home/ubuntu/demo/home/redis-db-test/build/libs/msa-sb-user-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/redis-db-test-0.0.1-SNAPSHOT.jar
             cd /home/ubuntu/server/easy_home
             
             # 깃 시크릿 사용
@@ -130,7 +142,12 @@ jobs:
             sudo fuser -k -n tcp 8761 || true
             sudo fuser -k -n tcp 8080 || true
             sudo fuser -k -n tcp 8081 || true
+            sudo fuser -k -n tcp 8090 || true
             
             nohup java -jar eureka-server-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
             nohup java -jar api-gateway-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
+            nohup java -jar redis-db-test-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
             nohup java -jar msa-sb-user-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
+            
+
+
