@@ -31,5 +31,4 @@ public class AuthController {
         authService.logout(email, accessToken);
         return ResponseEntity.ok("로그아웃 성공");
     }
-
 }
