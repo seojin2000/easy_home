@@ -114,6 +114,7 @@ public class UserService {
         message.setText(content);
 
         System.out.println("전송 직전");
+        System.out.println("메시지" + message);
         // 2. 전송
         mailSender.send(message);
     }
