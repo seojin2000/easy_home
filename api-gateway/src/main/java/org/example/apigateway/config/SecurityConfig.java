@@ -5,6 +5,7 @@ import org.example.apigateway.handler.CustomAuthenticationEntryPoint;
 import org.example.apigateway.jwt.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -51,13 +52,32 @@ public class SecurityConfig {
                                 // 회원가입
                                 "/user/signup",
                                 // 이메일 인증
-                                "/user/vaild"
-                                // 개별 서비스별 URL
+                                "/user/valid"
+                        ).permitAll()
 
-                        )
-                        .permitAll()
-                        // 나머지는 인증해야 접근 가능
-                        .anyExchange().authenticated() )
+                        // 개별 서비스별 URL
+                        // 🏡 [입주민 전용] resident/** 페이지 -> ADMIN은 접근 불가
+                        .pathMatchers("/resident/**").hasRole("USER")
+
+                        // 📝 [게시판] 입주민만 작성, 수정, 삭제 가능 / 관리자는 읽기만 가능
+                        .pathMatchers(HttpMethod.GET, "/board/**").permitAll()  // 누구나 읽기 가능
+                        .pathMatchers(HttpMethod.POST, "/board/**").hasRole("USER")  // 입주민만 작성 가능
+                        .pathMatchers(HttpMethod.PUT, "/board/**").hasRole("USER")   // 입주민만 수정 가능
+                        .pathMatchers(HttpMethod.DELETE, "/board/**").hasRole("USER") // 입주민만 삭제 가능
+
+                        // 🏡 [관리자 전용] admin/** 페이지 -> USER는 접근 불가
+                        .pathMatchers("/admin/**").hasRole("ADMIN")  // 관리자 권한 필요
+
+                        // 📢 [공지사항] 관리자만 작성, 수정, 삭제 가능
+                        .pathMatchers(HttpMethod.GET, "/notification/**").permitAll() // 모두 읽기 가능
+                        .pathMatchers(HttpMethod.POST, "/notification/**").hasRole("ADMIN") // 관리자만 작성 가능
+                        .pathMatchers(HttpMethod.PUT, "/notification/**").hasRole("ADMIN") // 관리자만 수정 가능
+                        .pathMatchers(HttpMethod.DELETE, "/notification/**").hasRole("ADMIN") // 관리자만 삭제 가능
+
+                        // 그 외 모든 요청은 인증 필요
+                        .anyExchange().authenticated()
+                )
+
                 // 나머지 API들은 인증해야 가능
                 // 간편한 예외처리 -> 오류 처리를 위한 설정(인증 -> 로그인없이 서비스 접근 / 권한 -> 관리자가 아닌데 관리자 메뉴 진입)
                 // 인증 오류 -> 401, 권한 오류 403 자동 처리, 필요시 추가 가능
