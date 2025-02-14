@@ -98,15 +98,22 @@ public class UserService {
         String url = "http://localhost:8080/user/valid?token=" + token;
 
         System.out.println("보내기만 하면 됨");
+        System.out.println("받은 url: " + url);
+        System.out.println("userEntity.getEmail" + userEntity.getEmail());
         // 4. 메일 전송 (받는 사람주소, 제목, 내용)
         sendMail( userEntity.getEmail(), "Email 인증", "링크를 눌러서 인증: " + url );
+
+        System.out.println("보냈다");
     }
     private void sendMail(String email, String subject, String content) {
+        System.out.println("보내기 들어왔다, 메시지 구성");
         // 1. 메세지 구성
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject(subject);
         message.setText(content);
+
+        System.out.println("전송 직전");
         // 2. 전송
         mailSender.send(message);
     }
