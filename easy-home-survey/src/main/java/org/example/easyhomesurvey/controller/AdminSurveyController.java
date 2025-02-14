@@ -5,28 +5,22 @@ import org.example.easyhomesurvey.entity.SurveyQuestion;
 import org.example.easyhomesurvey.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/survey")
-public class SurveyController {
+@RequestMapping("/admin/survey")
+@PreAuthorize("hasRole('ADMIN')")       // 관리자만 접근 가능
+public class AdminSurveyController {
     @Autowired
     private SurveyService surveyService;
 
     // 설문 등록 - 관리자
     @PostMapping("")
-    public ResponseEntity<String> createSurvey(@RequestBody SurveyDto surveyDto) {
-        surveyService.createSurvey(surveyDto);
+    public ResponseEntity<String> createSurvey(@RequestHeader("X-Auth-User") String email,
+                                               @RequestBody SurveyDto surveyDto) {
+        surveyService.createSurvey(email, surveyDto);
         return ResponseEntity.ok("설문조사 생성 완료");
-    }
-
-    // 설문 참여 - 입주민
-    @PostMapping("/join")
-    public ResponseEntity<String> joinSurvey(@RequestBody List<AnswerDto> answerDtos) {
-        surveyService.joinSurvey(answerDtos);
-        return ResponseEntity.ok("설문조사 참여 완료");
     }
 
     // 설문 결과 조회

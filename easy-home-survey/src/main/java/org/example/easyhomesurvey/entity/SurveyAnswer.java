@@ -17,11 +17,7 @@ public class SurveyAnswer {
     @JoinColumn(name="question_pk", nullable=false)
     private SurveyQuestion question;
 
-    // 인증 기능 추가 시 외래키 삭제
-    // private Integer userPk;
-    @ManyToOne
-    @JoinColumn(name="user_pk", nullable=false)
-    private UserEntity user;
+    private String email;
 
     private String answer;
 }

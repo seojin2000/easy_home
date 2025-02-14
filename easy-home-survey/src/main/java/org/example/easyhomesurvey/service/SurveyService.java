@@ -13,10 +13,6 @@ import java.util.stream.Collectors;
 @Service
 public class SurveyService {
     @Autowired
-    private ManagerRepository managerRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private SurveyRepository surveyRepository;
     @Autowired
     private SurveyQuestionRepository surveyQuestionRepository;
@@ -24,14 +20,14 @@ public class SurveyService {
     private SurveyAnswerRepository surveyAnswerRepository;
 
     // 설문 등록 - 관리자
-    public void createSurvey(SurveyDto surveyDto) {
-        // 관리자번호가 없거나 존재하지 않으면 안됨 (인증 후 수정)
+    public void createSurvey(String email, SurveyDto surveyDto) {
+        /*// 관리자번호가 없거나 존재하지 않으면 안됨 (인증 후 수정)
         if (surveyDto.getManagerPk() == null) {
             throw new IllegalArgumentException("ManagerPk is null");
         }
         ManagerEntity manager = managerRepository.findById(surveyDto.getManagerPk())
                 .orElseThrow(() -> new IllegalArgumentException("Manager does not exist"));
-
+*/
         // title이 비면 안됨
         if (surveyDto.getTitle() == null || surveyDto.getTitle().isEmpty()) {
             throw new IllegalArgumentException("Title cannot be null or empty");
@@ -43,7 +39,7 @@ public class SurveyService {
 
         // 설문  생성
         SurveyEntity surveyEntity = new SurveyEntity();
-        surveyEntity.setManager(manager);
+        surveyEntity.setEmail(email);
         surveyEntity.setTitle(surveyDto.getTitle());
         surveyEntity.setDescription(surveyDto.getDescription());
         surveyEntity.setEndDate(surveyDto.getEndDate());
@@ -64,14 +60,14 @@ public class SurveyService {
         }
     }
     // 설문 참여 - 입주민
-    public void joinSurvey(List<AnswerDto> answerDtos) {
+    public void joinSurvey(String email, List<AnswerDto> answerDtos) {
         for (AnswerDto answerDto : answerDtos) {
-            // 회원번호 조회
+           /* // 회원번호 조회
             if (answerDto.getUserPk() == null) {
                 throw new IllegalArgumentException("userPk is null");
             }
             UserEntity user = userRepository.findById(answerDto.getUserPk())
-                    .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
+                    .orElseThrow(() -> new IllegalArgumentException("User does not exist"));*/
 
             // questionPk 조회
             if (answerDto.getQuestionPk() == null) {
@@ -87,7 +83,7 @@ public class SurveyService {
 
             // 답변 생성
             SurveyAnswer surveyAnswer = new SurveyAnswer();
-            surveyAnswer.setUser(user);
+            surveyAnswer.setEmail(email);
             surveyAnswer.setQuestion(question);
             surveyAnswer.setAnswer(answerDto.getAnswer());
             surveyAnswerRepository.save(surveyAnswer);
