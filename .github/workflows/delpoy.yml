@@ -6,7 +6,6 @@ on:
       - main
       - feat-docker
 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,6 +15,8 @@ jobs:
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
       MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
 
     steps:
       # 1. 코드 체크아웃
@@ -56,7 +57,9 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: ./eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar, ./api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar
+          source: ./eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar, ./api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar, ./msa-sb-user/build/libs/msa-sb-user-0.0.1-SNAPSHOT.jar,
+
+
           target: /home/ubuntu/demo/home
 
       - name: EC2에서 업로드된 파일 확인
@@ -68,6 +71,7 @@ jobs:
           script: |
             ls -l /home/ubuntu/demo/home/eureka-server/build/libs/
             ls -l /home/ubuntu/demo/home/api-gateway/build/libs/
+            ls -l /home/ubuntu/demo/home/msa-sb-user/build/libs/
 
       - name: MySQL 연결 확인
         uses: appleboy/ssh-action@v1.2.0
@@ -95,6 +99,7 @@ jobs:
             mkdir -p /home/ubuntu/server/easy_home
             mv /home/ubuntu/demo/home/eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/eureka-server-0.0.1-SNAPSHOT.jar
             mv /home/ubuntu/demo/home/api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/api-gateway-0.0.1-SNAPSHOT.jar
+            mv /home/ubuntu/demo/home/msa-sb-user/build/libs/msa-sb-user-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/msa-sb-user-0.0.1-SNAPSHOT.jar
             cd /home/ubuntu/server/easy_home
             
             # 깃 시크릿 사용
@@ -103,7 +108,11 @@ jobs:
             export MYSQL_HOST=${{ secrets.MYSQL_HOST }}
             export MYSQL_USER=${{ secrets.MYSQL_USER }}
             export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            export EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+            export EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+            
             source ~/.bashrc
+            
             echo "EC2 Host: $EC2_HOST"
             echo "JWT_SECRET_KEY: $JWT_SECRET_KEY"
             echo "MySQL Host: $MYSQL_HOST"
@@ -114,3 +123,4 @@ jobs:
             
             nohup java -jar eureka-server-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
             nohup java -jar api-gateway-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
+            nohup java -jar msa-sb-user-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
