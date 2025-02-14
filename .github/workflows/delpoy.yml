@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat-docker
+      - feat-develop
 
 jobs:
   deploy:
