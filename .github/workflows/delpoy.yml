@@ -52,7 +52,7 @@ jobs:
 
       # 3. 빌드 (msa-db-user)
       - name: Build msa-db-user
-        working-directory: ./msa-db-user
+        working-directory: msa-db-user
         run: |
           chmod +x ./gradlew
           ./gradlew clean build
