@@ -1,6 +1,7 @@
 package org.example.msasbuser.service;
 
 import org.example.msasbuser.dto.UserDto;
+import org.example.msasbuser.dto.UserUpdateDto;
 import org.example.msasbuser.entity.UserEntity;
 import org.example.msasbuser.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,5 +113,37 @@ public class UserService {
         userRepository.save(userEntity);
         // 5. 레디스 토큰 삭제
         redisTemplate.delete(token);
+    }
+
+    // 마이페이지 - 내 정보 조회
+    public UserDto getUserInfo(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        return new UserDto(user.getEmail(), user.getUserName(), user.getAddress(), user.getRoles());
+    }
+
+    // 마이페이지 - 내 정보 수정 (닉네임, 아파트 주소)
+    public void updateUserInfo(String email, UserUpdateDto userUpdateDto) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        if (userUpdateDto.getUserName() != null && !userUpdateDto.getUserName().isEmpty()) {
+            user.setUserName(userUpdateDto.getUserName());
+        }
+
+        if (userUpdateDto.getAddress() != null && !userUpdateDto.getAddress().isEmpty()) {
+            user.setAddress(userUpdateDto.getAddress());
+        }
+
+        userRepository.save(user);
+    }
+
+    // 마이페이지 - 비밀번호 변경
+    public void updatePassword(String email, String newPassword) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

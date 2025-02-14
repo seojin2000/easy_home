@@ -1,10 +1,13 @@
 package org.example.msasbuser.controller;
 
 import org.example.msasbuser.dto.UserDto;
+import org.example.msasbuser.dto.UserUpdateDto;
 import org.example.msasbuser.service.AddressService;
 import org.example.msasbuser.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -65,5 +68,35 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("서버측 내부 오류 : " + e.getMessage());
         }
+    }
+
+    // 마이페이지 - 내 정보 조회
+    @GetMapping("/mypage")
+    public ResponseEntity<UserDto> getMyInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails.getUsername();
+        UserDto userDto = userService.getUserInfo(email);
+        return ResponseEntity.ok(userDto);
+    }
+
+    // 마이페이지 - 내 정보 수정 (닉네임, 아파트 주소)
+    @PutMapping("/mypage/update")
+    public ResponseEntity<String> updateMyInfo(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody UserUpdateDto userUpdateDto
+    ) {
+        String email = userDetails.getUsername();
+        userService.updateUserInfo(email, userUpdateDto);
+        return ResponseEntity.ok("회원 정보가 수정되었습니다.");
+    }
+
+    // 마이페이지 - 비밀번호 변경
+    @PutMapping("/mypage/password")
+    public ResponseEntity<String> updatePassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody String newPassword
+    ) {
+        String email = userDetails.getUsername();
+        userService.updatePassword(email, newPassword);
+        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
     }
 }

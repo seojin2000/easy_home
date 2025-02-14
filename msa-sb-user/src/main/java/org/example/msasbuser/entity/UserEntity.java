@@ -51,10 +51,8 @@ public class UserEntity implements UserDetails {
         return Collections.singletonList(new SimpleGrantedAuthority(roles));// roles 값을 그대로 사용
     }
 
-
     @Override
     public String getUsername() {
-        // email, password 통해서 로그인 예정
         return email;
     }
 
@@ -70,4 +68,8 @@ public class UserEntity implements UserDetails {
     // 이메일 인증 여부를 체크
     @Override
     public boolean isEnabled() {return enable;}
+
+    public String getUserName() {
+        return userName;
+    }
 }
