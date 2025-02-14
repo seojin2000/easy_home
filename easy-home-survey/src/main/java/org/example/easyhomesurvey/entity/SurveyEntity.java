@@ -16,11 +16,7 @@ public class SurveyEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer surveyPk;
 
-    // 인증 기능 추가 시 외래키 삭제
-    // private Integer managerPk;
-    @ManyToOne
-    @JoinColumn(name="manager_pk", nullable=false)
-    private ManagerEntity manager;
+    private String email;
 
     private String title;
     private String description;
