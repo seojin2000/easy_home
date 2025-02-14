@@ -13,6 +13,6 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
-    serviceUrl:
+    # serviceUrl:
       #defaultZone: http://${EC2_HOST}/
       #defaultZone: http://${EC2_HOST}/
