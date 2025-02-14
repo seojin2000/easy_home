@@ -33,24 +33,31 @@ public class UserService {
         // 1. 입력값 검증
         // 값 -> 검증가능!! -> 오류 -> 예외 던지기!! -> 생략
         // UI단을 사용 -> validation 사용, restapi -> 값에서 체크
+        System.out.println("createUser 입성");
         if( userDto.getEmail() == null || userDto.getEmail().isEmpty() ) {
             throw new IllegalArgumentException("Email cannot be empty");
         }
+        System.out.println("이메일 입력 확인");
         // 기존 가입자인지? -> 이메일 중복 체크!! -> 레포지토리 커스텀 구성
         // findBy + 컬럼명() => findByEmail()
         if( userRepository.findByEmail(userDto.getEmail()).isPresent() ) {
             throw new IllegalArgumentException("Email already exists");
         }
+        System.out.println("이메일 중복 확인");
         if( userDto.getUserName() == null || userDto.getUserName().isEmpty() ) {
             throw new IllegalArgumentException("userName cannot be empty");
         }
+        System.out.println("유저이름 확인");
         if( userDto.getPassword() == null || userDto.getPassword().isEmpty() ) {
             throw new IllegalArgumentException("password cannot be empty");
         }
 
+        System.out.println("비밀번호 확인");
         // 입력받은 주소 키워드로 실제 주소 검색
         String fullAddress = addressService.searchAddress(userDto.getAddress());
 
+
+        System.out.println("실존 주소 확인 / 앤티티 생성 시작");
         // 2. 엔티티 생성
         UserEntity userEntity = UserEntity.builder()
                 .email(userDto.getEmail())
@@ -61,14 +68,17 @@ public class UserService {
                 .enable(false)
                 .build();
 
+        System.out.println("앤티티 생성 성공");
         // 3. 엔티티 저장 -> DB에 members 테이블에 저장
         userRepository.save(userEntity);
 
+        System.out.println("앤티티 저장성공 | 이메일 발송 준빈");
         // 4. 인증 이메일 발송
         sendValidEmail( userEntity );
     }
     // 이메일 전송 메소드
     private void sendValidEmail(UserEntity userEntity) {
+        System.out.println("이메일 검증 함수 들어옴 | 토큰 발행");
         // 이메일 내용 안에 인증 요청을 GET방식으로 요청하도록 URL을 구성
         // 게이트웨이에 프리패스로 URL 등록되어야 한다
         // URL 합당하게 처리되기 위해서 토큰(일종의)값 같이 전달
@@ -82,8 +92,12 @@ public class UserService {
         //    이메일 인증절차 -> 유효한 이메일인지를 검증하는 단계
         redisTemplate.opsForValue().set(token,
                 userEntity.getEmail(), 6, TimeUnit.HOURS);
+
+        System.out.println("발행 성공");
         // 3. URL 구성 -> 가입한 사용자의 이메일에서 인증메일에 전송된 링크
         String url = "http://localhost:8080/user/valid?token=" + token;
+
+        System.out.println("보내기만 하면 됨");
         // 4. 메일 전송 (받는 사람주소, 제목, 내용)
         sendMail( userEntity.getEmail(), "Email 인증", "링크를 눌러서 인증: " + url );
     }
