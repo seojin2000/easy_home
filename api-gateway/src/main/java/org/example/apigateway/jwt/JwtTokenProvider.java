@@ -35,6 +35,7 @@ public class JwtTokenProvider {
     @PostConstruct
     public void init() {
         System.out.println("게이트웨이 시크릿 초기화 처리");
+        System.out.println(rawSecretKey);
         // 최초 1회 생성시 자동 호출되는 메소드
         // 시크릿키를 사용에 맞게 변환 처리
         this.secretKey = Keys.hmacShaKeyFor(rawSecretKey.getBytes());
