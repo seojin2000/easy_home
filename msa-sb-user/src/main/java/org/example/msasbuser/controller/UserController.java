@@ -6,6 +6,7 @@ import org.example.msasbuser.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.nio.file.AccessDeniedException;
 
 /**
  * 회원가입, 회원정보수정, 비번수정,...
