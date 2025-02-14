@@ -20,12 +20,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class UserService {
 
-    @Value("${spring.mail.username}")
-    private String username;
-
-    @Value("${spring.mail.password}")
-    private String password;
-
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -39,15 +33,10 @@ public class UserService {
 
     public void createUser(UserDto userDto) {
 
-        System.out.println("from 이메일 확인" + username);
-        System.out.println("from 비밀번호 확인" + password);
-
         // 1. 입력값 검증
         // 값 -> 검증가능!! -> 오류 -> 예외 던지기!! -> 생략
         // UI단을 사용 -> validation 사용, restapi -> 값에서 체크
         System.out.println("createUser 입성");
-
-
 
         if( userDto.getEmail() == null || userDto.getEmail().isEmpty() ) {
             throw new IllegalArgumentException("Email cannot be empty");
@@ -70,8 +59,6 @@ public class UserService {
         System.out.println("비밀번호 확인");
         // 입력받은 주소 키워드로 실제 주소 검색
         String fullAddress = addressService.searchAddress(userDto.getAddress());
-
-
 
         System.out.println("실존 주소 확인 / 앤티티 생성 시작");
         // 2. 엔티티 생성
@@ -110,31 +97,23 @@ public class UserService {
         redisTemplate.opsForValue().set(token,
                 userEntity.getEmail(), 6, TimeUnit.HOURS);
 
-        System.out.println("발행 성공");
         // 3. URL 구성 -> 가입한 사용자의 이메일에서 인증메일에 전송된 링크
         String url = "http://localhost:8080/user/valid?token=" + token;
 
-        System.out.println("보내기만 하면 됨");
-        System.out.println("받은 url: " + url);
         System.out.println("userEntity.getEmail" + userEntity.getEmail());
         // 4. 메일 전송 (받는 사람주소, 제목, 내용)
         sendMail( userEntity.getEmail(), "Email 인증", "링크를 눌러서 인증: " + url );
 
-        System.out.println("보냈다 sendMail을 했다");
     }
     private void sendMail(String email, String subject, String content) {
-        System.out.println("보내기 들어왔다, 메시지 구성");
         // 1. 메세지 구성
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject(subject);
         message.setText(content);
 
-        System.out.println("전송 직전");
-        System.out.println("메시지" + message);
         // 2. 전송
         mailSender.send(message);
-        System.out.println("진짜 보냈다");
     }
     // enable 컬럼 : f->t (유효할때만)
     public void updateActivate(String token) {
