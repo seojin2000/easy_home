@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - feat-docker
+      # - feat-docker
 
 jobs:
   deploy:
@@ -12,6 +12,9 @@ jobs:
     env:
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       EC2_HOST: ${{ secrets.EC2_HOST }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
 
     steps:
       # 1. 코드 체크아웃
@@ -65,6 +68,20 @@ jobs:
             ls -l /home/ubuntu/demo/home/eureka-server/build/libs/
             ls -l /home/ubuntu/demo/home/api-gateway/build/libs/
 
+      - name: MySQL 연결 확인
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            export MYSQL_USER=${{ secrets.MYSQL_USER }}
+            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            export MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+            
+            mysql -h $MYSQL_HOST -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES;"
+            echo "MySQL connection successful."
+
       - name: 서버 접속
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -82,13 +99,17 @@ jobs:
             # 깃 시크릿 사용
             export EC2_HOST=${{ secrets.EC2_HOST }}
             export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            export MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+            export MYSQL_USER=${{ secrets.MYSQL_USER }}
+            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
             source ~/.bashrc
             echo "EC2 Host: $EC2_HOST"
             echo "JWT_SECRET_KEY: $JWT_SECRET_KEY"
+            echo "MySQL Host: $MYSQL_HOST"
+            echo "MySQL User: $MYSQL_USER"
             
             sudo fuser -k -n tcp 8761 || true
             sudo fuser -k -n tcp 8080 || true
             
             nohup java -jar eureka-server-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
             nohup java -jar api-gateway-0.0.1-SNAPSHOT.jar > ./output.log 2>&1 &
-            rm -rf /home/ubuntu/server/demo
