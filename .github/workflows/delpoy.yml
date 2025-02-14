@@ -141,7 +141,7 @@ jobs:
             export MYSQL_USER=${{ secrets.MYSQL_USER }}
             export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
             export EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
-            export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+            export EMAIL_PASSWORD="${{ secrets.EMAIL_PASSWORD }}"
             
             source ~/.bashrc
             

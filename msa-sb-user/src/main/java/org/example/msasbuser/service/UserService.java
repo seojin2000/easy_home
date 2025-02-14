@@ -19,6 +19,13 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 public class UserService {
+
+    @Value("${spring.mail.username}")
+    private String username;
+
+    @Value("${spring.mail.password}")
+    private String password;
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -30,20 +37,17 @@ public class UserService {
     @Autowired
     private AddressService addressService;
 
-    @Value("${spring.mail.username}")
-    private String username;
-
-    @Value("${spring.mail.password}")
-    private String password;
-
     public void createUser(UserDto userDto) {
+
+        System.out.println("from 이메일 확인" + username);
+        System.out.println("from 비밀번호 확인" + password);
+
         // 1. 입력값 검증
         // 값 -> 검증가능!! -> 오류 -> 예외 던지기!! -> 생략
         // UI단을 사용 -> validation 사용, restapi -> 값에서 체크
         System.out.println("createUser 입성");
 
-        System.out.println("from 이메일 확인" + username);
-        System.out.println("from 비밀번호 확인" + password);
+
 
         if( userDto.getEmail() == null || userDto.getEmail().isEmpty() ) {
             throw new IllegalArgumentException("Email cannot be empty");
