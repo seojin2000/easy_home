@@ -88,6 +88,7 @@ public class UserService {
 
         // 1. 토큰 발행 -> 단순하게 기기 고유값 생성
         String token = UUID.randomUUID().toString();
+
         // 2. redis 저장 -> 키는 토큰(외부공개->가입자에게만 전달), 값은 이메일(토큰->이메일추출->db에 존재하는가?), 만료시간 6시간,
         //    이메일 인증절차 -> 유효한 이메일인지를 검증하는 단계
         redisTemplate.opsForValue().set(token,
@@ -103,7 +104,7 @@ public class UserService {
         // 4. 메일 전송 (받는 사람주소, 제목, 내용)
         sendMail( userEntity.getEmail(), "Email 인증", "링크를 눌러서 인증: " + url );
 
-        System.out.println("보냈다");
+        System.out.println("보냈다 sendMail을 했다");
     }
     private void sendMail(String email, String subject, String content) {
         System.out.println("보내기 들어왔다, 메시지 구성");
@@ -117,6 +118,7 @@ public class UserService {
         System.out.println("메시지" + message);
         // 2. 전송
         mailSender.send(message);
+        System.out.println("진짜 보냈다");
     }
     // enable 컬럼 : f->t (유효할때만)
     public void updateActivate(String token) {
