@@ -1,5 +1,7 @@
 name: easy home
 
+# 좋아 가보자
+
 on:
   push:
     branches:
