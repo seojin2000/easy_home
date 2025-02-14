@@ -135,16 +135,24 @@ jobs:
             cd /home/ubuntu/server/easy_home
             
             # 깃 시크릿 사용
-            export EC2_HOST=${{ secrets.EC2_HOST }}
-            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-            export MYSQL_HOST=${{ secrets.MYSQL_HOST }}
-            export MYSQL_USER=${{ secrets.MYSQL_USER }}
-            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-            export EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
-            export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
-            
+#            export EC2_HOST=${{ secrets.EC2_HOST }}
+#            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+#            export MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+#            export MYSQL_USER=${{ secrets.MYSQL_USER }}
+#            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+#            export EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
+#            export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+
+            echo "export EC2_HOST='${{ secrets.EC2_HOST }}'" >> ~/.bashrc
+            echo "export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'" >> ~/.bashrc
+            echo "export MYSQL_HOST='${{ secrets.MYSQL_HOST }}'" >> ~/.bashrc
+            echo "export MYSQL_USER='${{ secrets.MYSQL_USER }}'" >> ~/.bashrc
+            echo "export MYSQL_PASSWORD='${{ secrets.MYSQL_PASSWORD }}'" >> ~/.bashrc
+            echo "export EMAIL_USERNAME='${{ secrets.EMAIL_USERNAME }}'" >> ~/.bashrc
+            echo "export EMAIL_PASSWORD='${{ secrets.EMAIL_PASSWORD }}'" >> ~/.bashrc   
+
             source ~/.bashrc
-            
+
             echo "EC2 Host: $EC2_HOST"
             echo "JWT_SECRET_KEY: $JWT_SECRET_KEY"
             echo "MySQL Host: $MYSQL_HOST"

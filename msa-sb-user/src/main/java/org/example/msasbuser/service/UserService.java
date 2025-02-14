@@ -30,10 +30,10 @@ public class UserService {
     @Autowired
     private AddressService addressService;
 
-    @Value("${spring.datasource.username}")
+    @Value("${spring.mail.username}")
     private String username;
 
-    @Value("${spring.datasource.password}")
+    @Value("${spring.mail.password}")
     private String password;
 
     public void createUser(UserDto userDto) {
@@ -41,6 +41,10 @@ public class UserService {
         // 값 -> 검증가능!! -> 오류 -> 예외 던지기!! -> 생략
         // UI단을 사용 -> validation 사용, restapi -> 값에서 체크
         System.out.println("createUser 입성");
+
+        System.out.println("from 이메일 확인" + username);
+        System.out.println("from 비밀번호 확인" + password);
+
         if( userDto.getEmail() == null || userDto.getEmail().isEmpty() ) {
             throw new IllegalArgumentException("Email cannot be empty");
         }
@@ -63,7 +67,7 @@ public class UserService {
         // 입력받은 주소 키워드로 실제 주소 검색
         String fullAddress = addressService.searchAddress(userDto.getAddress());
 
-        System.out.println("from 이메일 확인" + username);
+
 
         System.out.println("실존 주소 확인 / 앤티티 생성 시작");
         // 2. 엔티티 생성
