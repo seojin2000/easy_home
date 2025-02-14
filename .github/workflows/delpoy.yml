@@ -119,7 +119,7 @@ jobs:
             mv /home/ubuntu/demo/home/eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/eureka-server-0.0.1-SNAPSHOT.jar
             mv /home/ubuntu/demo/home/api-gateway/build/libs/api-gateway-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/api-gateway-0.0.1-SNAPSHOT.jar
             mv /home/ubuntu/demo/home/msa-sb-user/build/libs/msa-sb-user-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/msa-sb-user-0.0.1-SNAPSHOT.jar
-            mv /home/ubuntu/demo/home/redis-db-test/build/libs/msa-sb-user-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/redis-db-test-0.0.1-SNAPSHOT.jar
+            mv /home/ubuntu/demo/home/redis-db-test/build/libs/redis-db-test-0.0.1-SNAPSHOT.jar /home/ubuntu/server/easy_home/redis-db-test-0.0.1-SNAPSHOT.jar
             cd /home/ubuntu/server/easy_home
             
             # 깃 시크릿 사용
