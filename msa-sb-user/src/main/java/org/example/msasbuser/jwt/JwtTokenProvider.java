@@ -29,6 +29,8 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
+
+
     // JWT 시크릿키 처리 -> 필요할때 호출해서 사용 -> 서명용도
     private Key getSecretKey() {
         return Keys.hmacShaKeyFor(rawSecretKey.getBytes());

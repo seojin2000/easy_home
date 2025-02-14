@@ -4,6 +4,7 @@ import org.example.msasbuser.dto.UserDto;
 import org.example.msasbuser.entity.UserEntity;
 import org.example.msasbuser.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,6 +29,12 @@ public class UserService {
     private JavaMailSender mailSender; // 자바 메일 전송 라이브러리
     @Autowired
     private AddressService addressService;
+
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String password;
 
     public void createUser(UserDto userDto) {
         // 1. 입력값 검증
@@ -56,6 +63,7 @@ public class UserService {
         // 입력받은 주소 키워드로 실제 주소 검색
         String fullAddress = addressService.searchAddress(userDto.getAddress());
 
+        System.out.println("from 이메일 확인" + username);
 
         System.out.println("실존 주소 확인 / 앤티티 생성 시작");
         // 2. 엔티티 생성
