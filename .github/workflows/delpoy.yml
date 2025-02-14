@@ -50,11 +50,10 @@ jobs:
           ls
           ls ./build/libs
 
-      # 3. 빌드 (msa-db-user)
-      - name: 빌드 (msa-db-user)
-        working-directory: ./msa-db-user
+      # 3. 빌드 (msa-sb-user)
+      - name: 빌드 (msa-sb-user)
+        working-directory: ./msa-sb-user
         run: |
-          ls -R
           chmod +x ./gradlew
           ./gradlew clean build
           pwd
