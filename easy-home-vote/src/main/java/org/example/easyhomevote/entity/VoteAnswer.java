@@ -21,9 +21,5 @@ public class VoteAnswer {
     @JoinColumn(name="option_pk", nullable=false)
     private VoteOption option;
 
-    // 인증 기능 추가 시 외래키 삭제
-    // private Integer userPk;
-    @ManyToOne
-    @JoinColumn(name="user_pk", nullable=false)
-    private UserEntity user;
+    private String email; // 입주민 이메일
 }

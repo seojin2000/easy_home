@@ -16,11 +16,7 @@ public class VoteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer votePk;
 
-    // 인증 기능 추가 시 외래키 삭제
-    // private Integer managerPk;
-    @ManyToOne
-    @JoinColumn(name="manager_pk", nullable=false)
-    private ManagerEntity manager;
+    private String email; // 관리자 이메일
 
     private String title;
     private String description;

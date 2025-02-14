@@ -4,26 +4,22 @@ import org.example.easyhomevote.dto.*;
 import org.example.easyhomevote.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/vote")
-public class VoteController {
+@RequestMapping("/admin/vote")
+@PreAuthorize("hasRole('ADMIN')")       // 관리자만 접근 가능
+public class AdminVoteController {
     @Autowired
     private VoteService voteService;
 
     // 투표 등록 - 관리자
     @PostMapping("")
-    public ResponseEntity<String> createVote(@RequestBody VoteDto voteDto) {
-        voteService.createVote(voteDto);
+    public ResponseEntity<String> createVote(@RequestHeader("X-Auth-User") String email,
+                                             @RequestBody VoteDto voteDto) {
+        voteService.createVote(email, voteDto);
         return ResponseEntity.ok("투표 생성 완료");
-    }
-
-    // 투표 참여 - 입주민
-    @PostMapping("/join")
-    public ResponseEntity<String> joinVote(@RequestBody AnswerDto answerDto) {
-        voteService.joinVote(answerDto);
-        return ResponseEntity.ok("투표 참여 완료");
     }
 
     // 투표 결과 조회 - 관리자, 입주민

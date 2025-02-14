@@ -8,7 +8,6 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class AnswerDto {
-    private Integer userPk;
     private Integer votePk;
     private Integer optionPk;
 }

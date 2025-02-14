@@ -13,10 +13,6 @@ import java.util.stream.Collectors;
 @Service
 public class VoteService {
     @Autowired
-    private ManagerRepository managerRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private VoteRepository voteRepository;
     @Autowired
     private VoteOptionRepository voteOptionRepository;
@@ -24,13 +20,13 @@ public class VoteService {
     private VoteAnswerRepository voteAnswerRepository;
 
     // 투표 등록 - 관리자
-    public void createVote(VoteDto voteDto) {
-        // 관리자번호가 없거나 존재하지 않으면 안됨 (인증 후 수정)
+    public void createVote(String email, VoteDto voteDto) {
+        /*// 관리자번호가 없거나 존재하지 않으면 안됨 (인증 후 수정)
         if (voteDto.getManagerPk() == null) {
             throw new IllegalArgumentException("ManagerPk is null");
         }
         ManagerEntity manager = managerRepository.findById(voteDto.getManagerPk())
-                .orElseThrow(() -> new IllegalArgumentException("Manager does not exist"));
+                .orElseThrow(() -> new IllegalArgumentException("Manager does not exist"));*/
 
         // title이 비면 안됨
         if (voteDto.getTitle() == null || voteDto.getTitle().isEmpty()) {
@@ -43,7 +39,7 @@ public class VoteService {
 
         // 투표 생성
         VoteEntity voteEntity = new VoteEntity();
-        voteEntity.setManager(manager);
+        voteEntity.setEmail(email);
         voteEntity.setTitle(voteDto.getTitle());
         voteEntity.setDescription(voteDto.getDescription());
         voteEntity.setEndDate(voteDto.getEndDate());
@@ -63,13 +59,13 @@ public class VoteService {
         }
     }
     // 투표 참여 - 입주민
-    public void joinVote(AnswerDto answerDto) {
-        // 회원번호 조회
+    public void joinVote(String email, AnswerDto answerDto) {
+        /*// 회원번호 조회
         if (answerDto.getUserPk() == null) {
             throw new IllegalArgumentException("userPk is null");
         }
         UserEntity user = userRepository.findById(answerDto.getUserPk())
-                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
+                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));*/
 
         // votePk 조회
         if (answerDto.getVotePk() == null) {
@@ -90,16 +86,15 @@ public class VoteService {
             throw new IllegalArgumentException("Option does not belong to the specified vote.");
         }
 
-
         // 같은 투표에 이미 참여했는지 확인
-        boolean alreadyVoted = voteAnswerRepository.existsByUserAndVote(user, vote);
+        boolean alreadyVoted = voteAnswerRepository.existsByEmailAndVote(email, vote);
         if (alreadyVoted) {
             throw new IllegalStateException("User can vote only once in this poll.");
         }
 
         // 답변 생성
         VoteAnswer voteAnswer = new VoteAnswer();
-        voteAnswer.setUser(user);
+        voteAnswer.setEmail(email);
         voteAnswer.setVote(vote);
         voteAnswer.setOption(option);
         voteAnswerRepository.save(voteAnswer);
