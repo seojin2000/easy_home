@@ -90,7 +90,6 @@ jobs:
           ls
           ls ./build/libs
           
-          
 
       # 5. SSH를 통해 EC2에 연결하여 업로드
       - name: EC2에 연결하여 업로드 (유레카, gateway, msa-user, redis)
