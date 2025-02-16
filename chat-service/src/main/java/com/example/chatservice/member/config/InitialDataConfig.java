@@ -26,7 +26,7 @@ public class InitialDataConfig {
                     String.class
             );
 
-            // 조회한 username으로 Member 엔티티 생성 및 저장
+            // 조 회한 username으로 Member 엔티티 생성 및 저장
             List<Member> members = usernames.stream()
                     .map(username -> Member.builder()
                             .nickname(username)
