@@ -10,7 +10,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user/complaint")
+@RequestMapping("/board/complaint")
 public class ComplaintController {
 
     private final ComplaintService complaintService;

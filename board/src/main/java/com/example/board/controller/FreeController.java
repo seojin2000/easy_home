@@ -10,7 +10,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user/free")
+@RequestMapping("/board/free")
 public class FreeController {
 
     private final FreeService freeService;

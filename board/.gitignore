@@ -1,3 +1,6 @@
+# 시크릿 프로퍼티 파일
+secret.properties
+
 HELP.md
 .gradle
 build/

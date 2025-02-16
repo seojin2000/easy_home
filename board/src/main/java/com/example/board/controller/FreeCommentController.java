@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user/comment")
+@RequestMapping("/board/comment")
 public class FreeCommentController {
 
     private final FreeCommentService freeCommentService;

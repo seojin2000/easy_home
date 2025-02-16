@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user/complaint-comment")
+@RequestMapping("/board/complaint-comment")
 public class ComplaintCommentController {
 
     private final ComplaintCommentService complaintCommentService;
